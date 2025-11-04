@@ -1,73 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todolist/data/appConstants.dart';
 import 'package:todolist/data/toDoList.dart';
 import 'package:todolist/data/toDoListCategory.dart';
-import 'package:todolist/screen/toDoSecondScreen.dart';
+import 'package:todolist/screen/toDoTaskScreen.dart';
+import 'package:todolist/widgets/addElement.dart';
 
-class ToDoFirstScreen extends StatefulWidget {
-  const ToDoFirstScreen({super.key});
+class ToDoCategoryScreen extends StatefulWidget {
+  const ToDoCategoryScreen({super.key});
 
   @override
-  State<ToDoFirstScreen> createState() => ToDoFirst();
+  State<ToDoCategoryScreen> createState() => ToDoCategory();
 }
 
-class ToDoFirst extends State<ToDoFirstScreen> {
+class ToDoCategory extends State<ToDoCategoryScreen> {
   final TextEditingController _nameCategory = TextEditingController();
   late Box<ToDoListCategory> listBox;
   final int indexNew = 0;
   @override
   void initState() {
     super.initState();
-    listBox = Hive.box<ToDoListCategory>('todolist2');
+    listBox = Hive.box<ToDoListCategory>(AppConstants.toDoCategoryBoxName);
   }
 
-  void _addCategory(String enteredText) {
+  void _addCategory(String categoryName) {
     setState(() {
-      final newList = ToDoListCategory(nameCategory: enteredText, index: 0);
+      final newList = ToDoListCategory(nameCategory: categoryName);
       listBox.add(newList);
     });
   }
 
-  void createCategory() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('New category'),
-          content: TextField(
-            controller: _nameCategory,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Input new category',
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String textCategory = _nameCategory.text;
-                if (textCategory.isNotEmpty) {
-                  _addCategory(textCategory);
-                }
-                _nameCategory.clear();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoList>('todolist3');
+    final listTasksBox = Hive.box<ToDoList>(AppConstants.toDoListBoxName);
     return listTasksBox.values
         .where((task) => task.categoryNames == categoryName)
         .length;
@@ -77,7 +42,7 @@ class ToDoFirst extends State<ToDoFirstScreen> {
     final updated = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ToDoSecondScreen(
+        builder: (context) => ToDoTaskScreen(
           categoryName: listBox.nameCategory,
           countTask: countForCategory(listBox.nameCategory),
         ),
@@ -85,8 +50,7 @@ class ToDoFirst extends State<ToDoFirstScreen> {
     );
 
     if (updated == true) {
-      setState(() {
-      });
+      setState(() {});
     }
   }
 
@@ -136,7 +100,7 @@ class ToDoFirst extends State<ToDoFirstScreen> {
               child: SizedBox.expand(
                 child: CardWidgets(
                   category: item,
-                  indexCat: countForCategory(item.nameCategory),
+                  countTask: countForCategory(item.nameCategory),
                 ),
               ),
             ),
@@ -146,7 +110,19 @@ class ToDoFirst extends State<ToDoFirstScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 188, 60, 211),
         child: const Icon(Icons.add),
-        onPressed: createCategory,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AddElement(
+              inputName: _nameCategory,
+              addName: 'category',
+
+              fun: () {
+                _addCategory(_nameCategory.text);
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -154,11 +130,11 @@ class ToDoFirst extends State<ToDoFirstScreen> {
 
 class CardWidgets extends StatelessWidget {
   final ToDoListCategory category;
-  final int indexCat;
+  final int countTask;
   const CardWidgets({
     super.key,
     required this.category,
-    required this.indexCat,
+    required this.countTask,
   });
 
   @override
@@ -184,7 +160,7 @@ class CardWidgets extends StatelessWidget {
                 style: const TextStyle(fontSize: 21.0),
               ),
 
-              Text('${indexCat} tasks'),
+              Text('${countTask} tasks'),
             ],
           ),
         ),

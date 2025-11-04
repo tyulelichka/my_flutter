@@ -2,28 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todolist/data/toDoList.dart';
+import 'package:todolist/data/appConstants.dart';
+import 'package:todolist/widgets/addElement.dart';
 
-class ToDoSecondScreen extends StatefulWidget {
+class ToDoTaskScreen extends StatefulWidget {
   final String categoryName;
   final int countTask;
-  const ToDoSecondScreen({
+  const ToDoTaskScreen({
     super.key,
     required this.categoryName,
     required this.countTask,
   });
 
   @override
-  State<ToDoSecondScreen> createState() => ToDoSecond();
+  State<ToDoTaskScreen> createState() => ToDoTask();
 }
 
-class ToDoSecond extends State<ToDoSecondScreen> {
+class ToDoTask extends State<ToDoTaskScreen> {
   final List filterTask = [];
   late Box<ToDoList> listTasksBox;
 
   final TextEditingController _myController = TextEditingController();
 
   void addFilterTask() {
-    filterTask.clear();
     filterTask.addAll(
       listTasksBox.values.where(
         (index) => index.categoryNames == widget.categoryName,
@@ -34,9 +35,8 @@ class ToDoSecond extends State<ToDoSecondScreen> {
   @override
   void initState() {
     super.initState();
-
     setState(() {
-      listTasksBox = Hive.box<ToDoList>('todolist3');
+      listTasksBox = Hive.box<ToDoList>(AppConstants.toDoListBoxName);
       addFilterTask();
     });
   }
@@ -47,6 +47,14 @@ class ToDoSecond extends State<ToDoSecondScreen> {
     super.dispose();
   }
 
+  void addSingleTask(ToDoList task) {
+    if (task.categoryNames == widget.categoryName) {
+      setState(() {
+        filterTask.add(task);
+      });
+    }
+  }
+
   void _addItemTask(String nameTask, String catName) {
     setState(() {
       final newTask = ToDoList(
@@ -55,7 +63,7 @@ class ToDoSecond extends State<ToDoSecondScreen> {
         categoryNames: catName,
       );
       listTasksBox.add(newTask);
-      addFilterTask();
+      addSingleTask(newTask);
     });
   }
 
@@ -65,43 +73,6 @@ class ToDoSecond extends State<ToDoSecondScreen> {
       task.taskCompleted = value ?? false;
       task.save();
     });
-  }
-
-  void createTask() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('New task'),
-          content: TextField(
-            controller: _myController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Input new task',
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String textTasks = _myController.text.trim();
-                if (textTasks.isNotEmpty) {
-                  _addItemTask(textTasks, widget.categoryName);
-                }
-                _myController.clear();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -155,7 +126,19 @@ class ToDoSecond extends State<ToDoSecondScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 188, 60, 211),
-        onPressed: createTask,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AddElement(
+              inputName: _myController,
+              addName: 'task',
+
+              fun: () {
+                _addItemTask(_myController.text, widget.categoryName);
+              },
+            ),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );

@@ -8,9 +8,11 @@ class ToDoList extends HiveObject {
   String nameTask;
 
   @HiveField(1)
-   bool taskCompleted;
+  bool taskCompleted;
+
   @HiveField(2)
   final String categoryNames;
+  
   @HiveField(3)
   Function(bool)? onChanged;
 
@@ -20,6 +22,4 @@ class ToDoList extends HiveObject {
     required this.categoryNames,
     this.onChanged,
   });
-
- 
 }

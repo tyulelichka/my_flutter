@@ -18,18 +18,15 @@ class ToDoListCategoryAdapter extends TypeAdapter<ToDoListCategory> {
     };
     return ToDoListCategory(
       nameCategory: fields[0] as String,
-      index: fields[1] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToDoListCategory obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.nameCategory)
       ..writeByte(1)
-      ..write(obj.index);
+      ..writeByte(0)
+      ..write(obj.nameCategory);
   }
 
   @override
