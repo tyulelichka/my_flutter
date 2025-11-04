@@ -20,7 +20,7 @@ class ToDoListAdapter extends TypeAdapter<ToDoList> {
       nameTask: fields[0] as String,
       taskCompleted: fields[1] as bool,
       categoryNames: fields[2] as String,
-      onChanged: fields[3] as dynamic Function(bool)?,
+      onChanged: fields[3],
     );
   }
 

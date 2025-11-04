@@ -25,11 +25,15 @@ class ToDoTask extends State<ToDoTaskScreen> {
   final TextEditingController _myController = TextEditingController();
 
   void addFilterTask() {
-    filterTask.addAll(
-      listTasksBox.values.where(
-        (index) => index.categoryNames == widget.categoryName,
-      ),
-    );
+    setState(() {
+      filterTask
+        ..clear()
+        ..addAll(
+          listTasksBox.values.where(
+            (task) => task.categoryNames == widget.categoryName,
+          ),
+        );
+    });
   }
 
   @override
@@ -61,6 +65,7 @@ class ToDoTask extends State<ToDoTaskScreen> {
         nameTask: nameTask,
         taskCompleted: false,
         categoryNames: catName,
+        onChanged: false,
       );
       listTasksBox.add(newTask);
       addSingleTask(newTask);
