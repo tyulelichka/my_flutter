@@ -3,23 +3,19 @@ import 'package:hive/hive.dart';
 part 'toDoList.g.dart';
 
 @HiveType(typeId: 1)
-class ToDoList extends HiveObject {
+class ToDoTask extends HiveObject {
   @HiveField(0)
   String nameTask;
 
   @HiveField(1)
-  bool taskCompleted;
+  bool? taskCompleted;
 
   @HiveField(2)
-  final String categoryNames;
+  final String nameCategory;
 
-  @HiveField(3)
-  bool? onChanged;
-
-  ToDoList({
+  ToDoTask({
     required this.nameTask,
     required this.taskCompleted,
-    required this.categoryNames,
-    this.onChanged,
+    required this.nameCategory,
   });
 }

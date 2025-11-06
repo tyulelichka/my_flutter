@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todolist/data/appConstants.dart';
-import 'package:todolist/data/toDoList.dart';
-import 'package:todolist/data/toDoListCategory.dart';
+import 'package:todolist/data/initHive.dart';
 import 'package:todolist/screen/toDoCategoryScreen.dart';
 
 void main() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(ToDoListCategoryAdapter());
-  Hive.registerAdapter(ToDoListAdapter());
-  await Hive.openBox<ToDoListCategory>(AppConstants.toDoCategoryBoxName);
-  await Hive.openBox<ToDoList>(AppConstants.toDoListBoxName);
-
+  await initHive();
   runApp(const MyApp());
 }
 

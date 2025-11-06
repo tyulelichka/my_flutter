@@ -11,40 +11,40 @@ class ToDoCategoryScreen extends StatefulWidget {
   const ToDoCategoryScreen({super.key});
 
   @override
-  State<ToDoCategoryScreen> createState() => ToDoCategory();
+  State<ToDoCategoryScreen> createState() => CategoryScreen();
 }
 
-class ToDoCategory extends State<ToDoCategoryScreen> {
+class CategoryScreen extends State<ToDoCategoryScreen> {
   final TextEditingController _nameCategory = TextEditingController();
-  late Box<ToDoListCategory> listBox;
-  final int indexNew = 0;
+  late Box<ToDoCategory> listBox;
+
   @override
   void initState() {
     super.initState();
-    listBox = Hive.box<ToDoListCategory>(AppConstants.toDoCategoryBoxName);
+    listBox = Hive.box<ToDoCategory>(AppConstants.toDoCategoryBoxName);
   }
 
   void _addCategory(String categoryName) {
     setState(() {
-      final newList = ToDoListCategory(nameCategory: categoryName);
+      final newList = ToDoCategory(name: categoryName);
       listBox.add(newList);
     });
   }
 
   int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoList>(AppConstants.toDoListBoxName);
+    final listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
     return listTasksBox.values
-        .where((task) => task.categoryNames == categoryName)
+        .where((task) => task.nameCategory == categoryName)
         .length;
   }
 
-  Future<void> openCategory(ToDoListCategory listBox) async {
+  Future<void> openCategory(ToDoCategory listBox) async {
     final updated = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ToDoTaskScreen(
-          categoryName: listBox.nameCategory,
-          countTask: countForCategory(listBox.nameCategory),
+          categoryName: listBox.name,
+          countTask: countForCategory(listBox.name),
         ),
       ),
     );
@@ -80,7 +80,7 @@ class ToDoCategory extends State<ToDoCategoryScreen> {
           final item = listBox.getAt(index);
 
           return Slidable(
-            key: ValueKey(item!.nameCategory),
+            key: ValueKey(item!.name),
             endActionPane: ActionPane(
               motion: const StretchMotion(),
               children: [
@@ -100,7 +100,7 @@ class ToDoCategory extends State<ToDoCategoryScreen> {
               child: SizedBox.expand(
                 child: CardWidgets(
                   category: item,
-                  countTask: countForCategory(item.nameCategory),
+                  countTask: countForCategory(item.name),
                 ),
               ),
             ),
@@ -117,7 +117,7 @@ class ToDoCategory extends State<ToDoCategoryScreen> {
               inputName: _nameCategory,
               addName: 'category',
 
-              fun: () {
+              create: () {
                 _addCategory(_nameCategory.text);
               },
             ),
@@ -129,7 +129,7 @@ class ToDoCategory extends State<ToDoCategoryScreen> {
 }
 
 class CardWidgets extends StatelessWidget {
-  final ToDoListCategory category;
+  final ToDoCategory category;
   final int countTask;
   const CardWidgets({
     super.key,
@@ -154,11 +154,7 @@ class CardWidgets extends StatelessWidget {
             children: [
               const Icon(Icons.all_inbox, size: 35),
               const SizedBox(height: 25),
-              Text(
-                category.nameCategory,
-
-                style: const TextStyle(fontSize: 21.0),
-              ),
+              Text(category.name, style: const TextStyle(fontSize: 21.0)),
 
               Text('${countTask} tasks'),
             ],

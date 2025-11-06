@@ -6,27 +6,25 @@ part of 'toDoListCategory.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ToDoListCategoryAdapter extends TypeAdapter<ToDoListCategory> {
+class ToDoCategoryAdapter extends TypeAdapter<ToDoCategory> {
   @override
   final int typeId = 0;
 
   @override
-  ToDoListCategory read(BinaryReader reader) {
+  ToDoCategory read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ToDoListCategory(
-      nameCategory: fields[0] as String,
-    );
+    return ToDoCategory(name: fields[0] as String);
   }
 
   @override
-  void write(BinaryWriter writer, ToDoListCategory obj) {
+  void write(BinaryWriter writer, ToDoCategory obj) {
     writer
       ..writeByte(1)
       ..writeByte(0)
-      ..write(obj.nameCategory);
+      ..write(obj.name);
   }
 
   @override
@@ -35,7 +33,7 @@ class ToDoListCategoryAdapter extends TypeAdapter<ToDoListCategory> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ToDoListCategoryAdapter &&
+      other is ToDoCategoryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

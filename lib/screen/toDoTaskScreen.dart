@@ -15,24 +15,22 @@ class ToDoTaskScreen extends StatefulWidget {
   });
 
   @override
-  State<ToDoTaskScreen> createState() => ToDoTask();
+  State<ToDoTaskScreen> createState() => TaskScreen();
 }
 
-class ToDoTask extends State<ToDoTaskScreen> {
+class TaskScreen extends State<ToDoTaskScreen> {
   final List filterTask = [];
-  late Box<ToDoList> listTasksBox;
+  late Box<ToDoTask> listTasksBox;
 
   final TextEditingController _myController = TextEditingController();
 
   void addFilterTask() {
     setState(() {
-      filterTask
-        ..clear()
-        ..addAll(
-          listTasksBox.values.where(
-            (task) => task.categoryNames == widget.categoryName,
-          ),
-        );
+      filterTask.addAll(
+        listTasksBox.values.where(
+          (task) => task.nameCategory == widget.categoryName,
+        ),
+      );
     });
   }
 
@@ -40,7 +38,7 @@ class ToDoTask extends State<ToDoTaskScreen> {
   void initState() {
     super.initState();
     setState(() {
-      listTasksBox = Hive.box<ToDoList>(AppConstants.toDoListBoxName);
+      listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
       addFilterTask();
     });
   }
@@ -51,8 +49,8 @@ class ToDoTask extends State<ToDoTaskScreen> {
     super.dispose();
   }
 
-  void addSingleTask(ToDoList task) {
-    if (task.categoryNames == widget.categoryName) {
+  void addSingleTask(ToDoTask task) {
+    if (task.nameCategory == widget.categoryName) {
       setState(() {
         filterTask.add(task);
       });
@@ -61,11 +59,10 @@ class ToDoTask extends State<ToDoTaskScreen> {
 
   void _addItemTask(String nameTask, String catName) {
     setState(() {
-      final newTask = ToDoList(
+      final newTask = ToDoTask(
         nameTask: nameTask,
         taskCompleted: false,
-        categoryNames: catName,
-        onChanged: false,
+        nameCategory: catName,
       );
       listTasksBox.add(newTask);
       addSingleTask(newTask);
@@ -110,8 +107,9 @@ class ToDoTask extends State<ToDoTaskScreen> {
                   onPressed: (context) {
                     setState(() {
                       item.delete();
-
-                      addFilterTask();
+                      setState(() {
+                        filterTask.removeAt(index);
+                      });
                     });
                   },
                   icon: Icons.delete_outline,
@@ -122,7 +120,7 @@ class ToDoTask extends State<ToDoTaskScreen> {
             child: TaskCard(
               nameTask: item.nameTask,
               taskCompleted: item.taskCompleted,
-              categoryNames: item.categoryNames,
+              categoryName: item.nameCategory,
               onChanged: (value) => checkChange(value, index),
             ),
           );
@@ -137,8 +135,7 @@ class ToDoTask extends State<ToDoTaskScreen> {
             builder: (context) => AddElement(
               inputName: _myController,
               addName: 'task',
-
-              fun: () {
+              create: () {
                 _addItemTask(_myController.text, widget.categoryName);
               },
             ),
@@ -150,18 +147,17 @@ class ToDoTask extends State<ToDoTaskScreen> {
   }
 }
 
-// ignore: must_be_immutable
 class TaskCard extends StatelessWidget {
   final String nameTask;
   final bool taskCompleted;
-  final String categoryNames;
+  final String categoryName;
   Function(bool?) onChanged;
 
   TaskCard({
     super.key,
     required this.nameTask,
     required this.taskCompleted,
-    required this.categoryNames,
+    required this.categoryName,
     required this.onChanged,
   });
 

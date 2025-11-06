@@ -6,36 +6,33 @@ part of 'toDoList.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ToDoListAdapter extends TypeAdapter<ToDoList> {
+class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
   @override
   final int typeId = 1;
 
   @override
-  ToDoList read(BinaryReader reader) {
+  ToDoTask read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ToDoList(
+    return ToDoTask(
       nameTask: fields[0] as String,
-      taskCompleted: fields[1] as bool,
-      categoryNames: fields[2] as String,
-      onChanged: fields[3],
+      taskCompleted: fields[1] as bool?,
+      nameCategory: fields[2] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ToDoList obj) {
+  void write(BinaryWriter writer, ToDoTask obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.nameTask)
       ..writeByte(1)
       ..write(obj.taskCompleted)
       ..writeByte(2)
-      ..write(obj.categoryNames)
-      ..writeByte(3)
-      ..write(obj.onChanged);
+      ..write(obj.nameCategory);
   }
 
   @override
@@ -44,7 +41,7 @@ class ToDoListAdapter extends TypeAdapter<ToDoList> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ToDoListAdapter &&
+      other is ToDoTaskAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

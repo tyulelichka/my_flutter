@@ -3,9 +3,9 @@ import 'package:hive/hive.dart';
 part 'toDoListCategory.g.dart';
 
 @HiveType(typeId: 0)
-class ToDoListCategory extends HiveObject {
+class ToDoCategory extends HiveObject {
   @HiveField(0)
-  String nameCategory;
+  String name;
 
-  ToDoListCategory({required this.nameCategory});
+  ToDoCategory({required this.name});
 }

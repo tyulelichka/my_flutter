@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AddElement extends StatelessWidget {
-  final TextEditingController inputName;
+  var inputName;
   final String addName;
-  final void Function() fun;
+  final void Function() create;
 
   AddElement({
     super.key,
     required this.addName,
     required this.inputName,
-    required this.fun,
+    required this.create,
   });
 
   @override
@@ -34,7 +34,7 @@ class AddElement extends StatelessWidget {
           onPressed: () {
             String text = inputName.text;
             if (text.isNotEmpty) {
-              fun();
+              create();
               inputName.clear();
             }
             Navigator.of(context).pop();

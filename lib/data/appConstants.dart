@@ -1,7 +1,4 @@
-
-abstract class AppConstants 
-
-{ static const toDoListBoxName = 'toDoListTasks';
-   static const toDoCategoryBoxName = 'toDoListCat';
- 
+abstract class AppConstants {
+  static const toDoListBoxName = 'toDoTasks1';
+  static const toDoCategoryBoxName = 'toDoCategoty1';
 }
