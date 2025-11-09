@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AddElement extends StatelessWidget {
-  var inputName;
+  final TextEditingController inputName;
   final String addName;
   final void Function() create;
 
-  AddElement({
+  const AddElement({
     super.key,
     required this.addName,
     required this.inputName,

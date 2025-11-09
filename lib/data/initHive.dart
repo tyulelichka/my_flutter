@@ -6,13 +6,11 @@ import 'package:todolist/data/toDoListCategory.dart';
 Future<void> initHive() async {
   await Hive.initFlutter();
 
-  if (!Hive.isAdapterRegistered(0)) {
-    Hive.registerAdapter(ToDoCategoryAdapter());
-  }
-  if (!Hive.isAdapterRegistered(1)) {
-    Hive.registerAdapter(ToDoTaskAdapter());
-  }
+  Hive.registerAdapter(ToDoCategoryAdapter());
+  Hive.registerAdapter(ToDoTaskAdapter());
 
   await Hive.openBox<ToDoCategory>(AppConstants.toDoCategoryBoxName);
   await Hive.openBox<ToDoTask>(AppConstants.toDoListBoxName);
+  await Hive.box<ToDoCategory>(AppConstants.toDoCategoryBoxName).clear();
+  await Hive.box<ToDoTask>(AppConstants.toDoListBoxName).clear();
 }

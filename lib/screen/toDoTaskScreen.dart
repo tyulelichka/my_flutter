@@ -20,7 +20,7 @@ class ToDoTaskScreen extends StatefulWidget {
 
 class TaskScreen extends State<ToDoTaskScreen> {
   final List filterTask = [];
-  late Box<ToDoTask> listTasksBox;
+  final Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
 
   final TextEditingController _myController = TextEditingController();
 
@@ -38,7 +38,6 @@ class TaskScreen extends State<ToDoTaskScreen> {
   void initState() {
     super.initState();
     setState(() {
-      listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
       addFilterTask();
     });
   }
@@ -151,9 +150,9 @@ class TaskCard extends StatelessWidget {
   final String nameTask;
   final bool taskCompleted;
   final String categoryName;
-  Function(bool?) onChanged;
+  final Function(bool?) onChanged;
 
-  TaskCard({
+  const TaskCard({
     super.key,
     required this.nameTask,
     required this.taskCompleted,

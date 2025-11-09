@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:todolist/data/initHive.dart';
 import 'package:todolist/screen/toDoCategoryScreen.dart';
 
 void main() async {
-  await Hive.initFlutter();
   await initHive();
   runApp(const MyApp());
 }

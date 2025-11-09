@@ -16,12 +16,13 @@ class ToDoCategoryScreen extends StatefulWidget {
 
 class CategoryScreen extends State<ToDoCategoryScreen> {
   final TextEditingController _nameCategory = TextEditingController();
-  late Box<ToDoCategory> listBox;
+  final Box<ToDoCategory> listBox = Hive.box<ToDoCategory>(
+    AppConstants.toDoCategoryBoxName,
+  );
 
   @override
   void initState() {
     super.initState();
-    listBox = Hive.box<ToDoCategory>(AppConstants.toDoCategoryBoxName);
   }
 
   void _addCategory(String categoryName) {
