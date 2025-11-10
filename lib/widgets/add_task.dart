@@ -14,6 +14,15 @@ class AddElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void handleSubmit() {
+      String text = inputName.text.trim();
+      if (text.isNotEmpty) {
+        create();
+        inputName.clear();
+        Navigator.of(context).pop(true);
+      }
+    }
+
     return AlertDialog(
       title: Text('New $addName'),
       content: TextField(
@@ -22,6 +31,8 @@ class AddElement extends StatelessWidget {
           border: OutlineInputBorder(),
           hintText: 'Input new $addName',
         ),
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => handleSubmit(),
       ),
       actions: [
         TextButton(
@@ -31,14 +42,7 @@ class AddElement extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          onPressed: () {
-            String text = inputName.text;
-            if (text.isNotEmpty) {
-              create();
-              inputName.clear();
-            }
-            Navigator.of(context).pop();
-          },
+          onPressed: () => handleSubmit(),
           child: const Text('Add'),
         ),
       ],

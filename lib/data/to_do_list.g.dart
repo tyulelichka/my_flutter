@@ -1,30 +1,41 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'toDoListCategory.dart';
+part of 'to_do_list.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ToDoCategoryAdapter extends TypeAdapter<ToDoCategory> {
+class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  ToDoCategory read(BinaryReader reader) {
+  ToDoTask read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ToDoCategory(name: fields[0] as String);
+    return ToDoTask(
+      nameTask: fields[0] as String,
+      taskCompleted: fields[1] as bool?,
+      nameCategory: fields[2] as String,
+      favorites: fields[3] as bool,
+    );
   }
 
   @override
-  void write(BinaryWriter writer, ToDoCategory obj) {
+  void write(BinaryWriter writer, ToDoTask obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.name);
+      ..write(obj.nameTask)
+      ..writeByte(1)
+      ..write(obj.taskCompleted)
+      ..writeByte(2)
+      ..write(obj.nameCategory)
+      ..writeByte(3)
+      ..write(obj.favorites);
   }
 
   @override
@@ -33,7 +44,7 @@ class ToDoCategoryAdapter extends TypeAdapter<ToDoCategory> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ToDoCategoryAdapter &&
+      other is ToDoTaskAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
