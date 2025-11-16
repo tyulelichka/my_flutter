@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:todolist/data/toDoList.dart';
-import 'package:todolist/data/appConstants.dart';
-import 'package:todolist/widgets/addElement.dart';
+import 'package:todolist/data/app_constants.dart';
+import 'package:todolist/data/to_do_list.dart';
+import 'package:todolist/widgets/add_task.dart';
+import 'package:todolist/widgets/task.dart';
 
 class ToDoTaskScreen extends StatefulWidget {
   final String categoryName;
@@ -20,17 +21,45 @@ class ToDoTaskScreen extends StatefulWidget {
 
 class TaskScreen extends State<ToDoTaskScreen> {
   final List filterTask = [];
-  final Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
-
+  // final List filterDoneTask = [];
+  final Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(
+    AppConstants.toDoListBoxName,
+  );
   final TextEditingController _myController = TextEditingController();
 
   void addFilterTask() {
     setState(() {
       filterTask.addAll(
         listTasksBox.values.where(
-          (task) => task.nameCategory == widget.categoryName,
+          (task) =>
+              task.nameCategory == widget.categoryName
+              //  &&
+              // task.taskCompleted == false,
         ),
       );
+      // filterDoneTask.addAll(
+      //   listTasksBox.values.where(
+      //     (task) =>
+      //         task.nameCategory == widget.categoryName &&
+      //         task.taskCompleted == true,
+      //   ),
+      // );
+    });
+    sortTask();
+  }
+
+  void sortTask() {
+    setState(() {
+      filterTask.sort((a, b) {
+        final intA = a.favorites ? 1 : 0;
+        final intB = b.favorites ? 1 : 0;
+        return intB - intA;
+      });
+      // filterDoneTask.sort((a, b) {
+      //   final intA = a.favorites ? 1 : 0;
+      //   final intB = b.favorites ? 1 : 0;
+      //   return intB - intA;
+      // });
     });
   }
 
@@ -62,6 +91,7 @@ class TaskScreen extends State<ToDoTaskScreen> {
         nameTask: nameTask,
         taskCompleted: false,
         nameCategory: catName,
+        favorites: false,
       );
       listTasksBox.add(newTask);
       addSingleTask(newTask);
@@ -74,6 +104,15 @@ class TaskScreen extends State<ToDoTaskScreen> {
       task.taskCompleted = value ?? false;
       task.save();
     });
+  }
+
+  void updateFavorites(bool? name, int index) {
+    setState(() {
+      final task = filterTask[index];
+      task.favorites = name ?? false;
+      task.save();
+    });
+    sortTask();
   }
 
   @override
@@ -120,7 +159,9 @@ class TaskScreen extends State<ToDoTaskScreen> {
               nameTask: item.nameTask,
               taskCompleted: item.taskCompleted,
               categoryName: item.nameCategory,
+              favorites: item.favorites,
               onChanged: (value) => checkChange(value, index),
+              updatestate: (value) => updateFavorites(value, index),
             ),
           );
         },
@@ -141,52 +182,6 @@ class TaskScreen extends State<ToDoTaskScreen> {
           );
         },
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class TaskCard extends StatelessWidget {
-  final String nameTask;
-  final bool taskCompleted;
-  final String categoryName;
-  final Function(bool?) onChanged;
-
-  const TaskCard({
-    super.key,
-    required this.nameTask,
-    required this.taskCompleted,
-    required this.categoryName,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Colors.purple[100],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-        child: Row(
-          children: [
-            Checkbox(
-              value: taskCompleted,
-              onChanged: onChanged,
-              activeColor: Colors.black,
-            ),
-            Text(
-              nameTask,
-              style: TextStyle(
-                fontSize: 18.0,
-                decoration: taskCompleted
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

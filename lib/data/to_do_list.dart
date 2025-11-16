@@ -1,21 +1,24 @@
 import 'package:hive/hive.dart';
 
-part 'toDoList.g.dart';
+part 'to_do_list.g.dart';
 
 @HiveType(typeId: 1)
 class ToDoTask extends HiveObject {
   @HiveField(0)
-  String nameTask;
+  final String nameTask;
 
   @HiveField(1)
-  bool? taskCompleted;
+   bool? taskCompleted;
 
   @HiveField(2)
-  final String nameCategory;
+  String nameCategory;
+  @HiveField(3)
+  bool favorites;
 
   ToDoTask({
     required this.nameTask,
     required this.taskCompleted,
     required this.nameCategory,
+    required this.favorites,
   });
 }

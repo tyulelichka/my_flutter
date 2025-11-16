@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'package:todolist/data/initHive.dart';
-import 'package:todolist/screen/toDoCategoryScreen.dart';
+import 'package:todolist/data/init_hive.dart';
+import 'package:todolist/screen/to_do_category_screen.dart';
 
 void main() async {
   await initHive();
