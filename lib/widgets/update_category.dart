@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:todolist/data/icons.dart';
 
-class UpdateElement extends StatelessWidget {
-  final TextEditingController inputName;
+class UpdateCategoryWidget extends StatelessWidget {
+  final TextEditingController newName;
   final String addName;
   final String initialIcon;
   final void Function(String newName, String newIcon) onUpdate;
 
-  const UpdateElement({
+  const UpdateCategoryWidget({
     super.key,
     required this.addName,
-    required this.inputName,
+    required this.newName,
     required this.initialIcon,
     required this.onUpdate,
   });
@@ -27,7 +27,7 @@ class UpdateElement extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: inputName,
+                controller: newName,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Input new name $addName',
@@ -64,7 +64,7 @@ class UpdateElement extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                String text = inputName.text.trim();
+                String text = newName.text.trim();
                 if (text.isNotEmpty) {
                   onUpdate(text, selectedIcon);
                   Navigator.of(context).pop(true);

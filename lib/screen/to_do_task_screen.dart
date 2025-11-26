@@ -21,9 +21,8 @@ class ToDoTaskScreen extends StatefulWidget {
 
 class TaskScreen extends State<ToDoTaskScreen> {
   final List filterTask = [];
-  // final List filterDoneTask = [];
   final Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(
-    AppConstants.toDoListBoxName,
+    AppConstants.toDoTaskBoxName,
   );
   final TextEditingController _myController = TextEditingController();
 
@@ -31,19 +30,10 @@ class TaskScreen extends State<ToDoTaskScreen> {
     setState(() {
       filterTask.addAll(
         listTasksBox.values.where(
-          (task) =>
-              task.nameCategory == widget.categoryName
-              //  &&
-              // task.taskCompleted == false,
+          (task) => task.nameCategory == widget.categoryName,
         ),
       );
-      // filterDoneTask.addAll(
-      //   listTasksBox.values.where(
-      //     (task) =>
-      //         task.nameCategory == widget.categoryName &&
-      //         task.taskCompleted == true,
-      //   ),
-      // );
+    
     });
     sortTask();
   }
@@ -55,11 +45,7 @@ class TaskScreen extends State<ToDoTaskScreen> {
         final intB = b.favorites ? 1 : 0;
         return intB - intA;
       });
-      // filterDoneTask.sort((a, b) {
-      //   final intA = a.favorites ? 1 : 0;
-      //   final intB = b.favorites ? 1 : 0;
-      //   return intB - intA;
-      // });
+    
     });
   }
 
@@ -159,8 +145,8 @@ class TaskScreen extends State<ToDoTaskScreen> {
               nameTask: item.nameTask,
               taskCompleted: item.taskCompleted,
               categoryName: item.nameCategory,
-              favorites: item.favorites,
-              onChanged: (value) => checkChange(value, index),
+              isFavorite: item.favorites,
+              onStateChanged: (value) => checkChange(value, index),
               updatestate: (value) => updateFavorites(value, index),
             ),
           );
@@ -173,7 +159,7 @@ class TaskScreen extends State<ToDoTaskScreen> {
           showDialog(
             context: context,
             builder: (context) => AddElement(
-              inputName: _myController,
+              taskController: _myController,
               addName: 'task',
               create: () {
                 _addItemTask(_myController.text, widget.categoryName);

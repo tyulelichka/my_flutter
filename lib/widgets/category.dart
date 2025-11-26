@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:todolist/data/icons.dart';
 import 'package:todolist/data/to_do_category.dart';
 
-class CardWidgets extends StatelessWidget {
+class CategoryWidgets extends StatelessWidget {
   final ToDoCategory category;
   final int countTask;
   final String nameIcon;
   
-  const CardWidgets({
+  const CategoryWidgets({
     super.key,
     required this.category,
     required this.countTask,

@@ -4,17 +4,17 @@ class TaskCard extends StatelessWidget {
   final String nameTask;
   final bool taskCompleted;
   final String categoryName;
-  final Function(bool?) onChanged;
+  final Function(bool?) onStateChanged;
   final Function(bool?) updatestate;
-  final bool favorites;
+  final bool isFavorite;
 
   const TaskCard({
     super.key,
     required this.nameTask,
     required this.taskCompleted,
     required this.categoryName,
-    required this.onChanged,
-    required this.favorites,
+    required this.onStateChanged,
+    required this.isFavorite,
     required this.updatestate,
   });
 
@@ -34,7 +34,7 @@ class TaskCard extends StatelessWidget {
               children: [
                 Checkbox(
                   value: taskCompleted,
-                  onChanged: onChanged,
+                  onChanged: onStateChanged,
                   activeColor: Colors.black,
                 ),
                 Text(
@@ -50,9 +50,9 @@ class TaskCard extends StatelessWidget {
             ),
 
             IconButton(
-              onPressed: () => updatestate(!favorites),
+              onPressed: () => updatestate(!isFavorite),
               icon: Icon(
-                favorites ? Icons.star : Icons.star_border,
+                isFavorite ? Icons.star : Icons.star_border,
                 color: Colors.purple,
               ),
             ),

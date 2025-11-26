@@ -10,5 +10,5 @@ Future<void> initHive() async {
   Hive.registerAdapter(ToDoTaskAdapter());
 
   await Hive.openBox<ToDoCategory>(AppConstants.toDoCategoryBoxName);
-  await Hive.openBox<ToDoTask>(AppConstants.toDoListBoxName);
+  await Hive.openBox<ToDoTask>(AppConstants.toDoTaskBoxName);
 }

@@ -10,20 +10,28 @@ class ToDoCategory extends HiveObject {
   String name;
 
   @HiveField(1)
-  String nameIcon;
+  String iconName;
 
-  ToDoCategory({required this.name, required this.nameIcon});
+  ToDoCategory({required this.name, required this.iconName});
+  
+}
+
+class ToDoCategoryUpdate {
+  final ToDoCategory toDoCategory;
+  ToDoCategoryUpdate(this.toDoCategory);
+
   void update(String newName, String icon) {
-    name = newName;
-    nameIcon = icon;
-    save();
+    toDoCategory.name = newName;
+    toDoCategory.iconName = icon;
+    toDoCategory.save();
   }
-  void rename(String newName, String newIcon) {
-    final oldName = name;
-    update(newName, newIcon);
-    save();
 
-    final taskBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
+  void rename(String newName, String newIcon) {
+    final oldName = toDoCategory.name;
+    update(newName, newIcon);
+   toDoCategory.save();
+
+    final taskBox = Hive.box<ToDoTask>(AppConstants.toDoTaskBoxName);
     for (var task in taskBox.values) {
       if (task.nameCategory == oldName) {
         task.nameCategory = newName;
@@ -31,4 +39,5 @@ class ToDoCategory extends HiveObject {
       }
     }
   }
+
 }

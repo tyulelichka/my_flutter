@@ -18,7 +18,7 @@ class ToDoCategoryAdapter extends TypeAdapter<ToDoCategory> {
     };
     return ToDoCategory(
       name: fields[0] as String,
-      nameIcon: fields[1] as String,
+      iconName: fields[1] as String,
     );
   }
 
@@ -29,7 +29,7 @@ class ToDoCategoryAdapter extends TypeAdapter<ToDoCategory> {
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.nameIcon);
+      ..write(obj.iconName);
   }
 
   @override

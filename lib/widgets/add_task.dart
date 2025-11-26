@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
 
 class AddElement extends StatelessWidget {
-  final TextEditingController inputName;
+  final TextEditingController taskController;
   final String addName;
   final void Function() create;
 
   const AddElement({
     super.key,
     required this.addName,
-    required this.inputName,
+    required this.taskController,
     required this.create,
   });
+  void handleSubmit() {
+    String text = taskController.text.trim();
+    if (text.isNotEmpty) {
+      create();
+      taskController.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    void handleSubmit() {
-      String text = inputName.text.trim();
-      if (text.isNotEmpty) {
-        create();
-        inputName.clear();
-        Navigator.of(context).pop(true);
-      }
-    }
-
     return AlertDialog(
       title: Text('New $addName'),
       content: TextField(
-        controller: inputName,
+        controller: taskController,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           hintText: 'Input new $addName',
         ),
         textInputAction: TextInputAction.done,
-        onSubmitted: (_) => handleSubmit(),
+        onSubmitted: (_) {
+          handleSubmit();
+          Navigator.of(context).pop(true);
+        },
       ),
       actions: [
         TextButton(
@@ -42,7 +43,10 @@ class AddElement extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          onPressed: () => handleSubmit(),
+          onPressed: () {
+            handleSubmit();
+            Navigator.of(context).pop(true);
+          },
           child: const Text('Add'),
         ),
       ],

@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/data/icons.dart';
+import 'package:todolist/data/app_constants.dart';
+import 'package:todolist/provider/icons_provider.dart';
 
-class AddCategoryElement extends StatelessWidget {
-  final TextEditingController inputName;
-  final String initialIcon = 'all';
+class AddCategoryElement extends StatefulWidget {
+  final IconsProvider iconsProvider;
+  final TextEditingController categoryNameController;
   final Function onAdd;
 
   const AddCategoryElement({
     super.key,
-    required this.inputName,
+    required this.categoryNameController,
     required this.onAdd,
+    required this.iconsProvider,
   });
 
   @override
-  Widget build(BuildContext context) {
-    String selectedIcon = initialIcon;
-    void handleSubmit() {
-      String text = inputName.text.trim();
-      if (text.isNotEmpty) {
-        onAdd(text, selectedIcon);
-        inputName.clear();
-        Navigator.of(context).pop(true);
-      }
-    }
+  State<AddCategoryElement> createState() => _AddCategoryElementState();
+}
 
+class _AddCategoryElementState extends State<AddCategoryElement> {
+  String selectedIcon = AppConstants.initialIcon;
+  void handleSubmit() {
+    String text = widget.categoryNameController.text.trim();
+    if (text.isNotEmpty) {
+      widget.onAdd(text, selectedIcon);
+      widget.categoryNameController.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
@@ -32,24 +38,27 @@ class AddCategoryElement extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: inputName,
+                controller: widget.categoryNameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Input name category',
                 ),
                 textInputAction: TextInputAction.done,
-                onSubmitted: (_) => handleSubmit(),
+                onSubmitted: ((_) {
+                  handleSubmit();
+                  Navigator.of(context).pop(true);
+                }),
               ),
               const SizedBox(height: 12),
               DropdownButton<String>(
                 value: selectedIcon,
                 isExpanded: true,
-                items: IconsMap.nameIcon.keys.map((String value) {
+                items: widget.iconsProvider.allIcons.keys.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Row(
                       children: [
-                        Icon(IconsMap.getIcon(value)),
+                        Icon(widget.iconsProvider.getIcon(value)),
                         const SizedBox(width: 10),
                         Text(value),
                       ],
@@ -70,7 +79,10 @@ class AddCategoryElement extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () => handleSubmit(),
+              onPressed: () {
+                handleSubmit();
+                Navigator.of(context).pop(true);
+              },
               child: const Text('Add'),
             ),
           ],

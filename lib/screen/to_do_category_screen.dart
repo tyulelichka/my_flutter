@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
+import 'package:todolist/provider/icons_provider.dart';
 import 'package:todolist/screen/to_do_task_screen.dart';
 import 'package:todolist/widgets/add_category.dart';
 import 'package:todolist/widgets/category.dart';
@@ -23,20 +25,15 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
     AppConstants.toDoCategoryBoxName,
   );
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _addCategory(String categoryName, String nameIcon) {
     setState(() {
-      final newList = ToDoCategory(name: categoryName, nameIcon: nameIcon);
+      final newList = ToDoCategory(name: categoryName, iconName: nameIcon);
       listBox.add(newList);
     });
   }
 
   int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoListBoxName);
+    final listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoTaskBoxName);
     return listTasksBox.values
         .where((task) => task.nameCategory == categoryName)
         .length;
@@ -61,6 +58,7 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
   @override
   void dispose() {
     _nameCategory.dispose();
+    _updateCategory.dispose();
     super.dispose();
   }
 
@@ -93,14 +91,13 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
                       _updateCategory.text = item.name;
                       showDialog(
                         context: context,
-                        builder: (context) => UpdateElement(
+                        builder: (context) => UpdateCategoryWidget(
                           addName: 'category',
-                          inputName: _updateCategory,
-                          initialIcon: item.nameIcon,
+                          newName: _updateCategory,
+                          initialIcon: item.iconName,
                           onUpdate: (newName, newIcon) {
                             setState(() {
-                              item.rename(newName, newIcon);
-                              item.save();
+                              ToDoCategoryUpdate(item).rename(newName, newIcon);
                             });
                           },
                         ),
@@ -130,9 +127,9 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
               ),
               child: GestureDetector(
                 onTap: () => openCategory(item),
-                child: CardWidgets(
+                child: CategoryWidgets(
                   category: item,
-                  nameIcon: item.nameIcon,
+                  nameIcon: item.iconName,
                   countTask: countForCategory(item.name),
                 ),
               ),
@@ -148,10 +145,11 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
             context: context,
 
             builder: (context) => AddCategoryElement(
-              inputName: _nameCategory,
+              categoryNameController: _nameCategory,
               onAdd: (text, value) {
                 _addCategory(text, value);
               },
+              iconsProvider: context.read<IconsProvider>(),
             ),
           );
         },
