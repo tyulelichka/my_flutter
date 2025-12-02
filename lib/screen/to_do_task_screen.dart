@@ -128,12 +128,8 @@ class TaskScreen extends State<ToDoTaskScreen> {
               isFavorite: item.favorites,
               onStateChanged: (value) => checkChange(value, index),
               updatestate: (value) => setState(() {
-                ToDoTaskRepository().updateFavorites(
-                value,
-                index,
-                filterTask,
-              );
-              })
+                ToDoTaskRepository().updateFavorites(value, index, filterTask);
+              }),
             ),
           );
         },

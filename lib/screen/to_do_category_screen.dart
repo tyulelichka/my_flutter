@@ -98,7 +98,9 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
                           initialIcon: item.iconName,
                           onUpdate: (newName, newIcon) {
                             setState(() {
-                             ToDoCategoriesRepository(item).rename(newName, newIcon);
+                              ToDoCategoriesRepository(
+                                item,
+                              ).rename(newName, newIcon);
                             });
                           },
                         ),
