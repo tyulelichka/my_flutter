@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
+import 'package:todolist/provider/category_repo.dart';
 import 'package:todolist/provider/icons_provider.dart';
 import 'package:todolist/screen/to_do_task_screen.dart';
 import 'package:todolist/widgets/add_category.dart';
@@ -97,7 +98,7 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
                           initialIcon: item.iconName,
                           onUpdate: (newName, newIcon) {
                             setState(() {
-                              ToDoCategoryUpdate(item).rename(newName, newIcon);
+                             ToDoCategoriesRepository(item).rename(newName, newIcon);
                             });
                           },
                         ),

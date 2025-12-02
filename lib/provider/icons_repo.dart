@@ -3,7 +3,7 @@ import 'package:todolist/data/icons.dart';
 
 abstract class IconsRepository {
   Map<String, IconData> getAllIcons();
-  IconData getIconByName(String name);
+  IconData? getIconByName(String name);
 }
 
 class IconsRepositoryImpl implements IconsRepository {
@@ -13,7 +13,7 @@ class IconsRepositoryImpl implements IconsRepository {
   }
 
   @override
-  IconData getIconByName(String name) {
+  IconData? getIconByName(String name) {
     return IconsMap.getIcon(name);
   }
 }

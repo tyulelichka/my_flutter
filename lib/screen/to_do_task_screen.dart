@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_list.dart';
+import 'package:todolist/provider/task_repo.dart';
 import 'package:todolist/widgets/add_task.dart';
 import 'package:todolist/widgets/task.dart';
 
@@ -33,20 +34,8 @@ class TaskScreen extends State<ToDoTaskScreen> {
           (task) => task.nameCategory == widget.categoryName,
         ),
       );
-    
     });
-    sortTask();
-  }
-
-  void sortTask() {
-    setState(() {
-      filterTask.sort((a, b) {
-        final intA = a.favorites ? 1 : 0;
-        final intB = b.favorites ? 1 : 0;
-        return intB - intA;
-      });
-    
-    });
+    ToDoTaskRepository().sortTask(filterTask);
   }
 
   @override
@@ -90,15 +79,6 @@ class TaskScreen extends State<ToDoTaskScreen> {
       task.taskCompleted = value ?? false;
       task.save();
     });
-  }
-
-  void updateFavorites(bool? name, int index) {
-    setState(() {
-      final task = filterTask[index];
-      task.favorites = name ?? false;
-      task.save();
-    });
-    sortTask();
   }
 
   @override
@@ -147,7 +127,13 @@ class TaskScreen extends State<ToDoTaskScreen> {
               categoryName: item.nameCategory,
               isFavorite: item.favorites,
               onStateChanged: (value) => checkChange(value, index),
-              updatestate: (value) => updateFavorites(value, index),
+              updatestate: (value) => setState(() {
+                ToDoTaskRepository().updateFavorites(
+                value,
+                index,
+                filterTask,
+              );
+              })
             ),
           );
         },

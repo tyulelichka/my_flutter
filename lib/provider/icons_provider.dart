@@ -8,5 +8,5 @@ class IconsProvider extends ChangeNotifier {
 
   Map<String, IconData> get allIcons => _repo.getAllIcons();
 
-  IconData getIcon(String name) => _repo.getIconByName(name);
+  IconData? getIcon(String name) => _repo.getIconByName(name);
 }
