@@ -18,7 +18,7 @@ class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
     };
     return ToDoTask(
       nameTask: fields[0] as String,
-      taskCompleted: fields[1] as bool?,
+      taskCompleted: fields[1] as bool,
       nameCategory: fields[2] as String,
       favorites: fields[3] as bool,
     );

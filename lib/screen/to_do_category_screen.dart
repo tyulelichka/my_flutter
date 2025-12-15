@@ -1,107 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-import 'package:todolist/data/app_constants.dart';
-import 'package:todolist/data/to_do_category.dart';
-import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/category_repo.dart';
 import 'package:todolist/provider/icons_provider.dart';
-import 'package:todolist/screen/to_do_task_screen.dart';
 import 'package:todolist/widgets/add_category.dart';
 import 'package:todolist/widgets/category.dart';
 import 'package:todolist/widgets/update_category.dart';
 
-class ToDoCategoryScreen extends StatefulWidget {
+class ToDoCategoryScreen extends StatelessWidget {
   const ToDoCategoryScreen({super.key});
 
   @override
-  State<ToDoCategoryScreen> createState() => CategoryScreen();
-}
-
-class CategoryScreen extends State<ToDoCategoryScreen> {
-  final TextEditingController _nameCategory = TextEditingController();
-  final TextEditingController _updateCategory = TextEditingController();
-  final Box<ToDoCategory> listBox = Hive.box<ToDoCategory>(
-    AppConstants.toDoCategoryBoxName,
-  );
-
-  void _addCategory(String categoryName, String nameIcon) {
-    setState(() {
-      final newList = ToDoCategory(name: categoryName, iconName: nameIcon);
-      listBox.add(newList);
-    });
-  }
-
-  int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoTaskBoxName);
-    return listTasksBox.values
-        .where((task) => task.nameCategory == categoryName)
-        .length;
-  }
-
-  Future<void> openCategory(ToDoCategory listBox) async {
-    final updated = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ToDoTaskScreen(
-          categoryName: listBox.name,
-          countTask: countForCategory(listBox.name),
-        ),
-      ),
-    );
-
-    if (updated == true) {
-      setState(() {});
-    }
-  }
-
-  @override
-  void dispose() {
-    _nameCategory.dispose();
-    _updateCategory.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final repo = context.watch<ToDoCategoriesRepository>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('To Do Category'),
         backgroundColor: Colors.purple[200],
       ),
       backgroundColor: Colors.purple[50],
+
       body: ListView.builder(
         padding: EdgeInsets.only(
           top: 12,
           bottom: MediaQuery.of(context).padding.bottom,
         ),
-        itemCount: listBox.length,
+        itemCount: repo.categories.length,
         itemBuilder: (context, index) {
-          final item = listBox.getAt(index);
+          final category = repo.categories[index];
+
           return Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Slidable(
-              key: ValueKey(item!.name),
+              key: ValueKey(category.key),
+
               startActionPane: ActionPane(
                 motion: const StretchMotion(),
                 extentRatio: 0.25,
                 children: [
                   SlidableAction(
-                    onPressed: (context) {
-                      _updateCategory.text = item.name;
+                    onPressed: (_) {
+                      final controller = TextEditingController(
+                        text: category.name,
+                      );
+
                       showDialog(
                         context: context,
-                        builder: (context) => UpdateCategoryWidget(
+                        builder: (_) => UpdateCategoryWidget(
                           addName: 'category',
-                          newName: _updateCategory,
-                          initialIcon: item.iconName,
+                          newName: controller,
+                          initialIcon: category.iconName,
                           onUpdate: (newName, newIcon) {
-                            setState(() {
-                              ToDoCategoriesRepository(
-                                item,
-                              ).rename(newName, newIcon);
-                            });
+                            context
+                                .read<ToDoCategoriesRepository>()
+                                .renameCategory(category, newName, newIcon);
                           },
                         ),
                       );
@@ -112,15 +65,16 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
                   ),
                 ],
               ),
+
               endActionPane: ActionPane(
                 motion: const StretchMotion(),
                 extentRatio: 0.25,
                 children: [
                   SlidableAction(
-                    onPressed: (context) {
-                      setState(() {
-                        listBox.deleteAt(index);
-                      });
+                    onPressed: (_) {
+                      context.read<ToDoCategoriesRepository>().deleteCategory(
+                        category,
+                      );
                     },
                     icon: Icons.delete_outline,
                     backgroundColor: const Color.fromARGB(255, 252, 102, 91),
@@ -128,29 +82,38 @@ class CategoryScreen extends State<ToDoCategoryScreen> {
                   ),
                 ],
               ),
+
               child: GestureDetector(
-                onTap: () => openCategory(item),
-                child: CategoryWidgets(
-                  category: item,
-                  nameIcon: item.iconName,
-                  countTask: countForCategory(item.name),
+                onTap: () => repo.openCategory(context, category),
+                child: Consumer<ToDoCategoriesRepository>(
+                  builder: (_, repo, __) {
+                    return CategoryWidgets(
+                      category: category,
+                      nameIcon: category.iconName,
+                      countTask: repo.countForCategory(category.name),
+                    );
+                  },
                 ),
               ),
             ),
           );
         },
       ),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 188, 60, 211),
         child: const Icon(Icons.add),
         onPressed: () {
+          final controller = TextEditingController();
           showDialog(
             context: context,
-
-            builder: (context) => AddCategoryElement(
-              categoryNameController: _nameCategory,
-              onAdd: (text, value) {
-                _addCategory(text, value);
+            builder: (_) => AddCategoryElement(
+              categoryNameController: controller,
+              onAdd: (text, icon) {
+                context.read<ToDoCategoriesRepository>().addCategory(
+                  text,
+                  icon,
+                );
               },
               iconsProvider: context.read<IconsProvider>(),
             ),

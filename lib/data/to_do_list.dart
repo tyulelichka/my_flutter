@@ -8,7 +8,7 @@ class ToDoTask extends HiveObject {
   final String nameTask;
 
   @HiveField(1)
-  final bool? taskCompleted;
+  bool taskCompleted;
 
   @HiveField(2)
   String nameCategory;

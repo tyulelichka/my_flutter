@@ -48,7 +48,6 @@ class TaskCard extends StatelessWidget {
                 ),
               ],
             ),
-
             IconButton(
               onPressed: () => updatestate(!isFavorite),
               icon: Icon(

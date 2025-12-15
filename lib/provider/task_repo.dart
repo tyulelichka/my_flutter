@@ -1,9 +1,29 @@
-class ToDoTaskRepository {
-  ToDoTaskRepository();
-  List filterTask = [];
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:todolist/data/app_constants.dart';
+import 'package:todolist/data/to_do_list.dart';
 
-  void sortTask(List tasks) {
-    filterTask == tasks;
+class ToDoTaskRepository extends ChangeNotifier {
+  ToDoTaskRepository(this.categoryName) {
+    loadTasks();
+  }
+  final String categoryName;
+  final List<ToDoTask> filterTask = [];
+  List<ToDoTask> get tasks => List.unmodifiable(filterTask);
+  static Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(
+    AppConstants.toDoTaskBoxName,
+  );
+  void loadTasks() {
+    filterTask
+      ..clear()
+      ..addAll(
+        listTasksBox.values.where((task) => task.nameCategory == categoryName),
+      );
+    sortTask();
+    notifyListeners();
+  }
+
+  void sortTask() {
     filterTask.sort((a, b) {
       final intA = a.favorites ? 1 : 0;
       final intB = b.favorites ? 1 : 0;
@@ -11,11 +31,31 @@ class ToDoTaskRepository {
     });
   }
 
-  void updateFavorites(bool? name, int index, List tasks) {
-    filterTask = tasks;
+  void updateFavorites(int index, bool value) {
     final task = filterTask[index];
-    task.favorites = name ?? false;
+    task.favorites = value;
     task.save();
-    sortTask(tasks);
+    sortTask();
+    notifyListeners();
+  }
+
+  void checkChange(bool? value, int index) {
+    final task = filterTask[index];
+    task.taskCompleted = value ?? false;
+    task.save();
+    notifyListeners();
+  }
+
+  void deleteTask(int index) {
+    filterTask[index].delete();
+    filterTask.removeAt(index);
+    notifyListeners();
+  }
+
+  void addItemTask(ToDoTask task) {
+    filterTask.add(task);
+    listTasksBox.add(task);
+    sortTask();
+    notifyListeners();
   }
 }

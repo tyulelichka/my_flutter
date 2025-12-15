@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/data/icons.dart';
+import 'package:todolist/provider/icons_repo.dart';
 
 class UpdateCategoryWidget extends StatelessWidget {
   final TextEditingController newName;
@@ -37,12 +37,12 @@ class UpdateCategoryWidget extends StatelessWidget {
               DropdownButton<String>(
                 value: selectedIcon,
                 isExpanded: true,
-                items: IconsMap.nameIcon.keys.map((String value) {
+                items: IconsRepository.nameIcon.keys.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Row(
                       children: [
-                        Icon(IconsMap.getIcon(value)),
+                        Icon(IconsRepository.getIcon(value)),
                         const SizedBox(width: 10),
                         Text(value),
                       ],

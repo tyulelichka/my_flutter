@@ -1,121 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:todolist/data/app_constants.dart';
+import 'package:provider/provider.dart';
 import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/task_repo.dart';
 import 'package:todolist/widgets/add_task.dart';
 import 'package:todolist/widgets/task.dart';
 
-class ToDoTaskScreen extends StatefulWidget {
-  final String categoryName;
-  final int countTask;
-  const ToDoTaskScreen({
-    super.key,
-    required this.categoryName,
-    required this.countTask,
-  });
-
-  @override
-  State<ToDoTaskScreen> createState() => TaskScreen();
-}
-
-class TaskScreen extends State<ToDoTaskScreen> {
-  final List filterTask = [];
-  final Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(
-    AppConstants.toDoTaskBoxName,
-  );
-  final TextEditingController _myController = TextEditingController();
-
-  void addFilterTask() {
-    setState(() {
-      filterTask.addAll(
-        listTasksBox.values.where(
-          (task) => task.nameCategory == widget.categoryName,
-        ),
-      );
-    });
-    ToDoTaskRepository().sortTask(filterTask);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      addFilterTask();
-    });
-  }
-
-  @override
-  void dispose() {
-    _myController.dispose();
-    super.dispose();
-  }
-
-  void addSingleTask(ToDoTask task) {
-    if (task.nameCategory == widget.categoryName) {
-      setState(() {
-        filterTask.add(task);
-      });
-    }
-  }
-
-  void _addItemTask(String nameTask, String catName) {
-    setState(() {
-      final newTask = ToDoTask(
-        nameTask: nameTask,
-        taskCompleted: false,
-        nameCategory: catName,
-        favorites: false,
-      );
-      listTasksBox.add(newTask);
-      addSingleTask(newTask);
-    });
-  }
-
-  void checkChange(bool? value, int index) {
-    setState(() {
-      final task = filterTask[index];
-      task.taskCompleted = value ?? false;
-      task.save();
-    });
-  }
+class ToDoTaskScreen extends StatelessWidget {
+  const ToDoTaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final repo = context.watch<ToDoTaskRepository>();
+    final tasks = repo.tasks;
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.categoryName),
+        title: Text(repo.categoryName),
         backgroundColor: Colors.purple[200],
-        leading: BackButton(
-          onPressed: () {
-            Navigator.of(context).pop(true);
-          },
-        ),
       ),
       backgroundColor: Colors.purple[50],
       body: ListView.separated(
-        itemCount: filterTask.length,
-        padding: EdgeInsets.only(
-          top: 12,
-          bottom: MediaQuery.of(context).padding.bottom,
-        ),
+        itemCount: tasks.length,
         itemBuilder: (context, index) {
-          final item = filterTask[index];
+          final item = tasks[index];
+
           return Slidable(
-            key: ValueKey(item.nameTask),
+            key: ValueKey(item.key),
             endActionPane: ActionPane(
               motion: const StretchMotion(),
               children: [
                 SlidableAction(
-                  onPressed: (context) {
-                    setState(() {
-                      item.delete();
-                      setState(() {
-                        filterTask.removeAt(index);
-                      });
-                    });
-                  },
+                  onPressed: (_) => repo.deleteTask(index),
                   icon: Icons.delete_outline,
                   backgroundColor: Colors.red,
                 ),
@@ -126,25 +42,30 @@ class TaskScreen extends State<ToDoTaskScreen> {
               taskCompleted: item.taskCompleted,
               categoryName: item.nameCategory,
               isFavorite: item.favorites,
-              onStateChanged: (value) => checkChange(value, index),
-              updatestate: (value) => setState(() {
-                ToDoTaskRepository().updateFavorites(value, index, filterTask);
-              }),
+              onStateChanged: (v) => repo.checkChange(v, index),
+              updatestate: (v) => repo.updateFavorites(index, v ?? false),
             ),
           );
         },
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 188, 60, 211),
         onPressed: () {
+          final controller = TextEditingController();
           showDialog(
             context: context,
-            builder: (context) => AddElement(
-              taskController: _myController,
+            builder: (_) => AddElement(
+              taskController: controller,
               addName: 'task',
               create: () {
-                _addItemTask(_myController.text, widget.categoryName);
+                repo.addItemTask(
+                  ToDoTask(
+                    nameTask: controller.text,
+                    taskCompleted: false,
+                    nameCategory: repo.categoryName,
+                    favorites: false,
+                  ),
+                );
               },
             ),
           );
