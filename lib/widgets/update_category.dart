@@ -37,7 +37,7 @@ class UpdateCategoryWidget extends StatelessWidget {
               DropdownButton<String>(
                 value: selectedIcon,
                 isExpanded: true,
-                items: IconsRepository.nameIcon.keys.map((String value) {
+                items: IconsRepositoryImpl.nameIcon.keys.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Row(

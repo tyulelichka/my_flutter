@@ -14,7 +14,7 @@ class ToDoTaskRepository extends ChangeNotifier {
     AppConstants.toDoTaskBoxName,
   );
   void loadTasks() {
-    filterTask
+    filterTask  
       ..clear()
       ..addAll(
         listTasksBox.values.where((task) => task.nameCategory == categoryName),

@@ -27,7 +27,7 @@ class CategoryWidgets extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 10.0),
-              child: Icon(IconsRepository.nameIcon[nameIcon], size: 32),
+              child: Icon(IconsRepositoryImpl.nameIcon[nameIcon], size: 32),
             ),
             Expanded(
               flex: 2,
