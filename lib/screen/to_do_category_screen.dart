@@ -44,7 +44,6 @@ class ToDoCategoryScreen extends StatelessWidget {
                       final controller = TextEditingController(
                         text: category.name,
                       );
-
                       showDialog(
                         context: context,
                         builder: (_) => UpdateCategoryWidget(

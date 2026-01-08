@@ -28,8 +28,12 @@ class ToDoCategoriesRepository extends ChangeNotifier {
       context,
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
-          create: (_) => ToDoTaskRepository(category.name),
-          child: const ToDoTaskScreen(),
+          create: (_) {
+            final repo = ToDoTaskRepository();
+            repo.loadTasks(category.name);
+            return repo;
+          },
+          child: ToDoTaskScreen(categoryName: category.name),
         ),
       ),
     );

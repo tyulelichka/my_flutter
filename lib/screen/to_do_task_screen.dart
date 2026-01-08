@@ -7,8 +7,8 @@ import 'package:todolist/widgets/add_task.dart';
 import 'package:todolist/widgets/task.dart';
 
 class ToDoTaskScreen extends StatelessWidget {
-  const ToDoTaskScreen({super.key});
-
+  const ToDoTaskScreen({super.key, required this.categoryName});
+final String categoryName;
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
@@ -16,7 +16,7 @@ class ToDoTaskScreen extends StatelessWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(repo.categoryName),
+        title: Text(categoryName),
         backgroundColor: Colors.purple[200],
       ),
       backgroundColor: Colors.purple[50],
@@ -62,7 +62,7 @@ class ToDoTaskScreen extends StatelessWidget {
                   ToDoTask(
                     nameTask: controller.text,
                     taskCompleted: false,
-                    nameCategory: repo.categoryName,
+                    nameCategory: categoryName,
                     favorites: false,
                   ),
                 );

@@ -4,17 +4,15 @@ import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_list.dart';
 
 class ToDoTaskRepository extends ChangeNotifier {
-  ToDoTaskRepository(this.categoryName) {
-    loadTasks();
-  }
-  final String categoryName;
+  ToDoTaskRepository();
   final List<ToDoTask> filterTask = [];
   List<ToDoTask> get tasks => List.unmodifiable(filterTask);
   static Box<ToDoTask> listTasksBox = Hive.box<ToDoTask>(
     AppConstants.toDoTaskBoxName,
   );
-  void loadTasks() {
-    filterTask  
+
+  void loadTasks(String categoryName) {
+    filterTask
       ..clear()
       ..addAll(
         listTasksBox.values.where((task) => task.nameCategory == categoryName),
