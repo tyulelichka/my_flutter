@@ -19,7 +19,7 @@ class AddCategoryElement extends StatefulWidget {
 }
 
 class _AddCategoryElementState extends State<AddCategoryElement> {
-  String selectedIcon = AppConstants.initialIcon;
+  String selectedIcon = AppConstantsString.initialIcon;
   void handleSubmit() {
     String text = widget.categoryNameController.text.trim();
     if (text.isNotEmpty) {

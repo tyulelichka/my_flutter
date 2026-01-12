@@ -23,8 +23,8 @@ void main() async {
 
         ChangeNotifierProvider(
           create: (_) => ToDoCategoriesRepository(
-            Hive.box<ToDoCategory>(AppConstants.toDoCategoryBoxName),
-            Hive.box<ToDoTask>(AppConstants.toDoTaskBoxName),
+            Hive.box<ToDoCategory>(AppConstantsString.toDoCategoryBoxName),
+            Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName),
           ),
         ),
       ],

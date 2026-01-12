@@ -20,8 +20,14 @@ class ToDoCategoryScreen extends StatelessWidget {
         builder: (_) => ChangeNotifierProvider(
           create: (_) {
             final repo = ToDoTaskRepository();
-            repo.loadTasks(category.name);
-            return repo;
+            try {
+              repo.loadTasks(category.name);
+              return repo;
+            } catch (error, stackTrace) {
+              debugPrint('Error loading tasks');
+              debugPrint(stackTrace.toString());
+              rethrow;
+            }
           },
           child: ToDoTaskScreen(categoryName: category.name),
         ),
@@ -58,9 +64,8 @@ class ToDoCategoryScreen extends StatelessWidget {
                     onPressed: (_) {
                       showDialog(
                         context: context,
-                        builder: (_) => UpdateCategoryWidget(
-                          addName: 'category: ${category.name}',
-                          newName: category.name,
+                        builder: (_) => UpdateCategory(
+                          initialName: category.name,
                           initialIcon: category.iconName,
                           onUpdate: (newName, newIcon) {
                             context
@@ -119,8 +124,8 @@ class ToDoCategoryScreen extends StatelessWidget {
               categoryNameController: controller,
               onAdd: (text, icon) {
                 context.read<ToDoCategoriesRepository>().addCategory(
-                  text,
-                  icon,
+                  name: text,
+                  icon: icon,
                 );
               },
               iconsProvider: context.read<IconsProvider>(),

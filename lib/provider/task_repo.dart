@@ -11,7 +11,7 @@ class ToDoTaskRepository extends ChangeNotifier {
     _filteredTask
       ..clear()
       ..addAll(
-        AppConstants.listTasksBox.values.where(
+        AppConstantsBox.listTasksBox.values.where(
           (task) => task.nameCategory == categoryName,
         ),
       );
@@ -50,7 +50,7 @@ class ToDoTaskRepository extends ChangeNotifier {
 
   void addItemTask(ToDoTask task) {
     _filteredTask.add(task);
-    AppConstants.listTasksBox.add(task);
+    AppConstantsBox.listTasksBox.add(task);
     sortTask();
     notifyListeners();
   }

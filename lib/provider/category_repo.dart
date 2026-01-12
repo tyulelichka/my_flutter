@@ -15,7 +15,7 @@ class ToDoCategoriesRepository extends ChangeNotifier {
   }
   List<ToDoCategory> get categories => categoryBox.values.toList();
 
-  void addCategory(String name, String icon) {
+  void addCategory({required String name, required String icon}) {
     categoryBox.add(ToDoCategory(name: name, iconName: icon));
     notifyListeners();
   }
@@ -41,7 +41,7 @@ class ToDoCategoriesRepository extends ChangeNotifier {
   }
 
   int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoTask>(AppConstants.toDoTaskBoxName);
+    final listTasksBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
     return listTasksBox.values
         .where((task) => task.nameCategory == categoryName)
         .length;

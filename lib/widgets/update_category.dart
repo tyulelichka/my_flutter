@@ -1,28 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:todolist/provider/icons_repo.dart';
 
-class UpdateCategoryWidget extends StatelessWidget {
-  final newName = TextEditingController();
-  final String addName;
+class UpdateCategory extends StatefulWidget {
   final String initialIcon;
   final void Function(String newName, String newIcon) onUpdate;
+  final String initialName;
 
-  UpdateCategoryWidget({
+  const UpdateCategory({
     super.key,
-    required this.addName,
     required this.initialIcon,
     required this.onUpdate,
-    required String newName,
+    required this.initialName,
   });
 
   @override
+  State<UpdateCategory> createState() => UpdateCategoryState();
+}
+
+class UpdateCategoryState extends State<UpdateCategory> {
+  late final TextEditingController newName;
+
+  @override
+  void initState() {
+    super.initState();
+    newName = TextEditingController(text: widget.initialName);
+  }
+
+  @override
+  void dispose() {
+    newName.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String selectedIcon = initialIcon;
+    String selectedIcon = widget.initialIcon;
 
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
-          title: Text('Update $addName'),
+          title: Text('Update category'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -30,7 +47,7 @@ class UpdateCategoryWidget extends StatelessWidget {
                 controller: newName,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Input new name $addName',
+                  hintText: 'Input new name',
                 ),
               ),
               const SizedBox(height: 12),
@@ -66,7 +83,7 @@ class UpdateCategoryWidget extends StatelessWidget {
               onPressed: () {
                 String text = newName.text.trim();
                 if (text.isNotEmpty) {
-                  onUpdate(text, selectedIcon);
+                  widget.onUpdate(text, selectedIcon);
                   Navigator.of(context).pop(true);
                 }
               },

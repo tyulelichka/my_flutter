@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
 
-class AddElement extends StatelessWidget {
+class AddElement extends StatefulWidget {
   final String addName;
   final void Function(String) create;
-  final taskController = TextEditingController();
-  AddElement({super.key, required this.addName, required this.create});
+
+  const AddElement({super.key, required this.addName, required this.create});
+
+  @override
+  State<AddElement> createState() => _AddElementState();
+}
+
+class _AddElementState extends State<AddElement> {
+  late final TextEditingController taskController;
+
+  @override
+  void initState() {
+    super.initState();
+    taskController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    taskController.dispose();
+    super.dispose();
+  }
+
   void handleSubmit() {
-    String text = taskController.text.trim();
+    final text = taskController.text.trim();
     if (text.isNotEmpty) {
-      create(taskController.text);
+      widget.create(text);
       taskController.clear();
     }
   }
@@ -16,12 +36,12 @@ class AddElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('New $addName'),
+      title: Text('New ${widget.addName}'),
       content: TextField(
         controller: taskController,
         decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'Input new $addName',
+          border: const OutlineInputBorder(),
+          hintText: 'Input new ${widget.addName}',
         ),
         textInputAction: TextInputAction.done,
         onSubmitted: (_) {
@@ -31,10 +51,8 @@ class AddElement extends StatelessWidget {
       ),
       actions: [
         TextButton(
+          onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
         ),
         ElevatedButton(
           onPressed: () {

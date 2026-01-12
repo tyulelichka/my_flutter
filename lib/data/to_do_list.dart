@@ -5,7 +5,7 @@ part 'to_do_list.g.dart';
 @HiveType(typeId: 1)
 class ToDoTask extends HiveObject {
   @HiveField(0)
-  final String nameTask;
+  String nameTask;
 
   @HiveField(1)
   bool taskCompleted;
