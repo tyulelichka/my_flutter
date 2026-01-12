@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:todolist/provider/icons_repo.dart';
 
 class UpdateCategoryWidget extends StatelessWidget {
-  final TextEditingController newName;
+  final newName = TextEditingController();
   final String addName;
   final String initialIcon;
   final void Function(String newName, String newIcon) onUpdate;
 
-  const UpdateCategoryWidget({
+  UpdateCategoryWidget({
     super.key,
     required this.addName,
-    required this.newName,
     required this.initialIcon,
     required this.onUpdate,
+    required String newName,
   });
 
   @override

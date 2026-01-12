@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
-import 'package:todolist/provider/task_repo.dart';
-import 'package:todolist/screen/to_do_task_screen.dart';
 
 class ToDoCategoriesRepository extends ChangeNotifier {
   final Box<ToDoCategory> categoryBox;
@@ -21,22 +18,6 @@ class ToDoCategoriesRepository extends ChangeNotifier {
   void addCategory(String name, String icon) {
     categoryBox.add(ToDoCategory(name: name, iconName: icon));
     notifyListeners();
-  }
-
-  void openCategory(BuildContext context, ToDoCategory category) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider(
-          create: (_) {
-            final repo = ToDoTaskRepository();
-            repo.loadTasks(category.name);
-            return repo;
-          },
-          child: ToDoTaskScreen(categoryName: category.name),
-        ),
-      ),
-    );
   }
 
   void renameCategory(ToDoCategory category, String newName, String newIcon) {
@@ -56,12 +37,6 @@ class ToDoCategoriesRepository extends ChangeNotifier {
 
   void deleteCategory(ToDoCategory category) {
     category.delete();
-
-    for (final task in taskBox.values) {
-      if (task.nameCategory == category.name) {
-        task.delete();
-      }
-    }
     notifyListeners();
   }
 

@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AddElement extends StatelessWidget {
-  final TextEditingController taskController;
   final String addName;
-  final void Function() create;
-
-  const AddElement({
-    super.key,
-    required this.addName,
-    required this.taskController,
-    required this.create,
-  });
+  final void Function(String) create;
+  final taskController = TextEditingController();
+  AddElement({super.key, required this.addName, required this.create});
   void handleSubmit() {
     String text = taskController.text.trim();
     if (text.isNotEmpty) {
-      create();
+      create(taskController.text);
       taskController.clear();
     }
   }

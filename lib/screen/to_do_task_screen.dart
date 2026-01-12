@@ -8,12 +8,11 @@ import 'package:todolist/widgets/task.dart';
 
 class ToDoTaskScreen extends StatelessWidget {
   const ToDoTaskScreen({super.key, required this.categoryName});
-final String categoryName;
+  final String categoryName;
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
     final tasks = repo.tasks;
-    
     return Scaffold(
       appBar: AppBar(
         title: Text(categoryName),
@@ -24,7 +23,6 @@ final String categoryName;
         itemCount: tasks.length,
         itemBuilder: (context, index) {
           final item = tasks[index];
-
           return Slidable(
             key: ValueKey(item.key),
             endActionPane: ActionPane(
@@ -42,8 +40,9 @@ final String categoryName;
               taskCompleted: item.taskCompleted,
               categoryName: item.nameCategory,
               isFavorite: item.favorites,
-              onStateChanged: (v) => repo.checkChange(v, index),
-              updatestate: (v) => repo.updateFavorites(index, v ?? false),
+              onStateChanged: (value) => repo.checkChange(value, index),
+              updatestate: (value) =>
+                  repo.updateFavorites(index, value ?? false),
             ),
           );
         },
@@ -51,16 +50,14 @@ final String categoryName;
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final controller = TextEditingController();
           showDialog(
             context: context,
             builder: (_) => AddElement(
-              taskController: controller,
               addName: 'task',
-              create: () {
+              create: (context) {
                 repo.addItemTask(
                   ToDoTask(
-                    nameTask: controller.text,
+                    nameTask: context,
                     taskCompleted: false,
                     nameCategory: categoryName,
                     favorites: false,

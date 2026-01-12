@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/provider/category_repo.dart';
 import 'package:todolist/provider/icons_provider.dart';
+import 'package:todolist/provider/task_repo.dart';
+import 'package:todolist/screen/to_do_task_screen.dart';
 import 'package:todolist/widgets/add_category.dart';
 import 'package:todolist/widgets/category.dart';
 import 'package:todolist/widgets/update_category.dart';
@@ -10,17 +13,31 @@ import 'package:todolist/widgets/update_category.dart';
 class ToDoCategoryScreen extends StatelessWidget {
   const ToDoCategoryScreen({super.key});
 
+  void openCategory(BuildContext context, ToDoCategory category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider(
+          create: (_) {
+            final repo = ToDoTaskRepository();
+            repo.loadTasks(category.name);
+            return repo;
+          },
+          child: ToDoTaskScreen(categoryName: category.name),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoCategoriesRepository>();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('To Do Category'),
         backgroundColor: Colors.purple[200],
       ),
       backgroundColor: Colors.purple[50],
-
       body: ListView.builder(
         padding: EdgeInsets.only(
           top: 12,
@@ -29,26 +46,21 @@ class ToDoCategoryScreen extends StatelessWidget {
         itemCount: repo.categories.length,
         itemBuilder: (context, index) {
           final category = repo.categories[index];
-
           return Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Slidable(
               key: ValueKey(category.key),
-
               startActionPane: ActionPane(
                 motion: const StretchMotion(),
                 extentRatio: 0.25,
                 children: [
                   SlidableAction(
                     onPressed: (_) {
-                      final controller = TextEditingController(
-                        text: category.name,
-                      );
                       showDialog(
                         context: context,
                         builder: (_) => UpdateCategoryWidget(
-                          addName: 'category',
-                          newName: controller,
+                          addName: 'category: ${category.name}',
+                          newName: category.name,
                           initialIcon: category.iconName,
                           onUpdate: (newName, newIcon) {
                             context
@@ -64,7 +76,6 @@ class ToDoCategoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
               endActionPane: ActionPane(
                 motion: const StretchMotion(),
                 extentRatio: 0.25,
@@ -81,9 +92,8 @@ class ToDoCategoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
               child: GestureDetector(
-                onTap: () => repo.openCategory(context, category),
+                onTap: () => openCategory(context, category),
                 child: Consumer<ToDoCategoriesRepository>(
                   builder: (_, repo, __) {
                     return CategoryWidgets(
@@ -98,7 +108,6 @@ class ToDoCategoryScreen extends StatelessWidget {
           );
         },
       ),
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 188, 60, 211),
         child: const Icon(Icons.add),
