@@ -4,12 +4,10 @@ import 'package:todolist/provider/icons_provider.dart';
 
 class AddCategoryElement extends StatefulWidget {
   final IconsProvider iconsProvider;
-  final TextEditingController categoryNameController;
   final Function onAdd;
 
   const AddCategoryElement({
     super.key,
-    required this.categoryNameController,
     required this.onAdd,
     required this.iconsProvider,
   });
@@ -20,11 +18,12 @@ class AddCategoryElement extends StatefulWidget {
 
 class _AddCategoryElementState extends State<AddCategoryElement> {
   String selectedIcon = AppConstantsString.initialIcon;
+    final TextEditingController categoryNameController= TextEditingController();
   void handleSubmit() {
-    String text = widget.categoryNameController.text.trim();
+    String text = categoryNameController.text.trim();
     if (text.isNotEmpty) {
       widget.onAdd(text, selectedIcon);
-      widget.categoryNameController.clear();
+      categoryNameController.clear();
     }
   }
 
@@ -38,7 +37,7 @@ class _AddCategoryElementState extends State<AddCategoryElement> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: widget.categoryNameController,
+                controller: categoryNameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Input name category',

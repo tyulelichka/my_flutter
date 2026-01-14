@@ -11,12 +11,11 @@ class AddElement extends StatefulWidget {
 }
 
 class _AddElementState extends State<AddElement> {
-  late final TextEditingController taskController;
+  final TextEditingController taskController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    taskController = TextEditingController();
   }
 
   @override

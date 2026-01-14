@@ -14,21 +14,18 @@ class ToDoCategoryScreen extends StatelessWidget {
   const ToDoCategoryScreen({super.key});
 
   void openCategory(BuildContext context, ToDoCategory category) {
+    final repo = context.read<ToDoTaskRepository>();
+    try {
+      repo.loadTasks(category.name);
+    } catch (error, stackTrace) {
+      debugPrint('Error loading tasks');
+      debugPrint(stackTrace.toString());
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider(
-          create: (_) {
-            final repo = ToDoTaskRepository();
-            try {
-              repo.loadTasks(category.name);
-              return repo;
-            } catch (error, stackTrace) {
-              debugPrint('Error loading tasks');
-              debugPrint(stackTrace.toString());
-              rethrow;
-            }
-          },
+        builder: (_) => ChangeNotifierProvider.value(
+          value: repo,
           child: ToDoTaskScreen(categoryName: category.name),
         ),
       ),
@@ -117,11 +114,9 @@ class ToDoCategoryScreen extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 188, 60, 211),
         child: const Icon(Icons.add),
         onPressed: () {
-          final controller = TextEditingController();
           showDialog(
             context: context,
             builder: (_) => AddCategoryElement(
-              categoryNameController: controller,
               onAdd: (text, icon) {
                 context.read<ToDoCategoriesRepository>().addCategory(
                   name: text,

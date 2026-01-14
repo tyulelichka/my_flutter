@@ -18,12 +18,14 @@ class UpdateCategory extends StatefulWidget {
 }
 
 class UpdateCategoryState extends State<UpdateCategory> {
-  late final TextEditingController newName;
+  late final TextEditingController newName = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    newName = TextEditingController(text: widget.initialName);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      newName.text = widget.initialName;
+    });
   }
 
   @override

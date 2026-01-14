@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/data/app_constants.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todolist/data/to_do_list.dart';
 
 class ToDoTaskRepository extends ChangeNotifier {
-  ToDoTaskRepository();
+  final Box<ToDoTask> listTasksBox;
+  ToDoTaskRepository(this.listTasksBox) ;
   final List<ToDoTask> _filteredTask = [];
   List<ToDoTask> get tasks => List.unmodifiable(_filteredTask);
 
@@ -11,9 +13,7 @@ class ToDoTaskRepository extends ChangeNotifier {
     _filteredTask
       ..clear()
       ..addAll(
-        AppConstantsBox.listTasksBox.values.where(
-          (task) => task.nameCategory == categoryName,
-        ),
+        listTasksBox.values.where((task) => task.nameCategory == categoryName),
       );
     sortTask();
     notifyListeners();
@@ -50,7 +50,7 @@ class ToDoTaskRepository extends ChangeNotifier {
 
   void addItemTask(ToDoTask task) {
     _filteredTask.add(task);
-    AppConstantsBox.listTasksBox.add(task);
+    listTasksBox.add(task);
     sortTask();
     notifyListeners();
   }
