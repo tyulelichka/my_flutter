@@ -7,8 +7,9 @@ import 'package:todolist/widgets/add_task.dart';
 import 'package:todolist/widgets/task.dart';
 
 class ToDoTaskScreen extends StatelessWidget {
-  const ToDoTaskScreen({super.key, required this.categoryName});
   final String categoryName;
+  const ToDoTaskScreen({super.key, required this.categoryName});
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
@@ -37,9 +38,9 @@ class ToDoTaskScreen extends StatelessWidget {
             ),
             child: TaskCard(
               nameTask: item.nameTask,
-              taskCompleted: item.taskCompleted,
+              taskCompleted: item.completed,
               categoryName: item.nameCategory,
-              isFavorite: item.favorites,
+              isFavorite: item.isFavorite,
               onStateChanged: (value) => repo.checkChange(value, index),
               updatestate: (value) =>
                   repo.updateFavorites(index, value ?? false),
@@ -58,9 +59,9 @@ class ToDoTaskScreen extends StatelessWidget {
                 repo.addItemTask(
                   ToDoTask(
                     nameTask: context,
-                    taskCompleted: false,
+                    completed: false,
                     nameCategory: categoryName,
-                    favorites: false,
+                    isFavorite: false,
                   ),
                 );
               },

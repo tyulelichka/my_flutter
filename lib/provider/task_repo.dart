@@ -5,8 +5,8 @@ import 'package:todolist/data/to_do_list.dart';
 
 class ToDoTaskRepository extends ChangeNotifier {
   final Box<ToDoTask> listTasksBox;
-  ToDoTaskRepository(this.listTasksBox) ;
   final List<ToDoTask> _filteredTask = [];
+  ToDoTaskRepository(this.listTasksBox);
   List<ToDoTask> get tasks => List.unmodifiable(_filteredTask);
 
   void loadTasks(String categoryName) {
@@ -21,15 +21,15 @@ class ToDoTaskRepository extends ChangeNotifier {
 
   void sortTask() {
     _filteredTask.sort((a, b) {
-      final intA = a.favorites ? 1 : 0;
-      final intB = b.favorites ? 1 : 0;
+      final intA = a.isFavorite ? 1 : 0;
+      final intB = b.isFavorite ? 1 : 0;
       return intB - intA;
     });
   }
 
   void updateFavorites(int index, bool value) {
     final task = _filteredTask[index];
-    task.favorites = value;
+    task.isFavorite = value;
     task.save();
     sortTask();
     notifyListeners();
@@ -37,7 +37,7 @@ class ToDoTaskRepository extends ChangeNotifier {
 
   void checkChange(bool? value, int index) {
     final task = _filteredTask[index];
-    task.taskCompleted = value ?? false;
+    task.completed = value ?? false;
     task.save();
     notifyListeners();
   }

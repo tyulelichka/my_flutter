@@ -18,9 +18,9 @@ class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
     };
     return ToDoTask(
       nameTask: fields[0] as String,
-      taskCompleted: fields[1] as bool,
+      completed: fields[1] as bool,
       nameCategory: fields[2] as String,
-      favorites: fields[3] as bool,
+      isFavorite: fields[3] as bool,
     );
   }
 
@@ -31,11 +31,11 @@ class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
       ..writeByte(0)
       ..write(obj.nameTask)
       ..writeByte(1)
-      ..write(obj.taskCompleted)
+      ..write(obj.completed)
       ..writeByte(2)
       ..write(obj.nameCategory)
       ..writeByte(3)
-      ..write(obj.favorites);
+      ..write(obj.isFavorite);
   }
 
   @override

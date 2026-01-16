@@ -14,11 +14,6 @@ class _AddElementState extends State<AddElement> {
   final TextEditingController taskController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     taskController.dispose();
     super.dispose();

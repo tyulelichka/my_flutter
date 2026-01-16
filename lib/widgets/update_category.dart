@@ -18,14 +18,16 @@ class UpdateCategory extends StatefulWidget {
 }
 
 class UpdateCategoryState extends State<UpdateCategory> {
-  late final TextEditingController newName = TextEditingController();
-
+  final TextEditingController newName = TextEditingController();
+  late String selectedIcon;
+  
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       newName.text = widget.initialName;
     });
+    selectedIcon = widget.initialIcon;
   }
 
   @override
@@ -36,8 +38,6 @@ class UpdateCategoryState extends State<UpdateCategory> {
 
   @override
   Widget build(BuildContext context) {
-    String selectedIcon = widget.initialIcon;
-
     return StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(

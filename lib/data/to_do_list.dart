@@ -8,17 +8,17 @@ class ToDoTask extends HiveObject {
   String nameTask;
 
   @HiveField(1)
-  bool taskCompleted;
+  bool completed;
 
   @HiveField(2)
   String nameCategory;
   @HiveField(3)
-  bool favorites;
+  bool isFavorite;
 
   ToDoTask({
     required this.nameTask,
-    required this.taskCompleted,
+    required this.completed,
     required this.nameCategory,
-    required this.favorites,
+    required this.isFavorite,
   });
 }
