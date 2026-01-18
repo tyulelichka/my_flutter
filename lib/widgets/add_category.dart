@@ -18,7 +18,7 @@ class AddCategoryElement extends StatefulWidget {
 
 class _AddCategoryElementState extends State<AddCategoryElement> {
   String selectedIcon = AppConstantsString.initialIcon;
-  final TextEditingController categoryNameController = TextEditingController();
+  final categoryNameController = TextEditingController();
 
   void handleSubmit() {
     String text = categoryNameController.text.trim();

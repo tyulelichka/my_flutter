@@ -19,8 +19,8 @@ class UpdateCategory extends StatefulWidget {
 
 class UpdateCategoryState extends State<UpdateCategory> {
   final TextEditingController newName = TextEditingController();
-  late String selectedIcon;
-  
+  String selectedIcon = '';
+
   @override
   void initState() {
     super.initState();

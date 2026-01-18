@@ -18,7 +18,6 @@ class ToDoCategoryScreen extends StatelessWidget {
     try {
       repo.loadTasks(category.name);
     } catch (error, stackTrace) {
-      debugPrint('Error loading tasks');
       debugPrint(stackTrace.toString());
     }
     Navigator.push(
