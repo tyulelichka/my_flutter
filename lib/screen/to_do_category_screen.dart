@@ -25,7 +25,7 @@ class ToDoCategoryScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: repo,
-          child: ToDoTaskScreen(categoryName: category.name),
+          child: TodoTaskState(categoryName: category.name),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
 
+
 class ToDoCategoriesRepository extends ChangeNotifier {
   final Box<ToDoCategory> categoryBox;
   final Box<ToDoTask> taskBox;
@@ -36,7 +37,33 @@ class ToDoCategoriesRepository extends ChangeNotifier {
   }
 
   void deleteCategory(ToDoCategory category) {
-    category.delete();
+    final oldName = category.name;
+    const newName = 'Not category';
+
+    if (oldName == newName) {
+      final tasksToDelete = taskBox.values
+          .where((task) => task.nameCategory == oldName)
+          .toList();
+      for (final task in tasksToDelete) {
+        task.delete();
+      }
+    } else {
+      final hasNewCategory = categoryBox.values.any(
+        (value) => value.name == newName,
+      );
+      if (!hasNewCategory) {
+        addCategory(name: newName, icon: 'all');
+      }
+      for (final task in taskBox.values) {
+        if (task.nameCategory == oldName) {
+          task.nameCategory = newName;
+          task.save();
+        }
+      }
+    }
+    if (category.isInBox) {
+      category.delete();
+    }
     notifyListeners();
   }
 
