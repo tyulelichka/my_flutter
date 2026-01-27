@@ -17,5 +17,5 @@ Future<void> initHive() async {
     AppConstantsString.toDoTaskBoxName,
   );
   final categoriesRepo = ToDoCategoriesRepository(categoryBox, taskBox);
-  categoriesRepo.defaultCategory();
+  categoriesRepo.createDefaultCategory();
 }
