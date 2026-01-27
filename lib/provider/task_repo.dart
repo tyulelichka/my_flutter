@@ -27,8 +27,8 @@ class ToDoTaskRepository extends ChangeNotifier {
     });
   }
 
-  void updateFavorites(String name, bool value) {
-    final task = _filteredTask.firstWhere((t) => t.nameTask == name);
+  void updateFavorites(String id, bool value) {
+    final task = _filteredTask.firstWhere((value) => value.id == id);
     task.isFavorite = value;
     task.save();
 
@@ -36,15 +36,15 @@ class ToDoTaskRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void checkChange(bool? value, String name) {
-    final task = _filteredTask.firstWhere((value) => value.nameTask == name);
+  void checkChange(bool? value, String id) {
+    final task = _filteredTask.firstWhere((value) => value.id == id);
     task.completed = value ?? false;
     task.save();
     notifyListeners();
   }
 
-  void deleteTask(String name) {
-    final task = _filteredTask.indexWhere((t) => t.nameTask == name);
+  void deleteTask(String id) {
+    final task = _filteredTask.indexWhere((value) => value.id == id);
     _filteredTask[task].delete();
     _filteredTask.removeAt(task);
 

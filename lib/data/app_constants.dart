@@ -1,5 +1,6 @@
 abstract class AppConstantsString {
-  static const toDoTaskBoxName = 'to_do_task';
-  static const toDoCategoryBoxName = 'to_do_category';
+  static const toDoTaskBoxName = 'to_Do_Tasks';
+  static const toDoCategoryBoxName = 'to_Do_Categories';
   static const initialIcon = 'all';
+  static const categoryDefault = 'Not category';
 }

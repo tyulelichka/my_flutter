@@ -5,6 +5,7 @@ import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/task_repo.dart';
 import 'package:todolist/widgets/add_task.dart';
 import 'package:todolist/widgets/task.dart';
+import 'package:uuid/uuid.dart';
 
 class TodoTaskState extends StatefulWidget {
   final String categoryName;
@@ -51,8 +52,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) =>
-                                      repo.deleteTask(item.nameTask),
+                                  onPressed: (_) => repo.deleteTask(item.id),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
@@ -64,11 +64,9 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               categoryName: item.nameCategory,
                               isFavorite: item.isFavorite,
                               onStateChanged: (value) =>
-                                  repo.checkChange(value, item.nameTask),
-                              updatestate: (value) => repo.updateFavorites(
-                                item.nameTask,
-                                value ?? false,
-                              ),
+                                  repo.checkChange(value, item.id),
+                              updatestate: (value) =>
+                                  repo.updateFavorites(item.id, value ?? false),
                             ),
                           );
                         },
@@ -95,8 +93,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) =>
-                                      repo.deleteTask(item.nameTask),
+                                  onPressed: (_) => repo.deleteTask(item.id),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
@@ -108,11 +105,9 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               categoryName: item.nameCategory,
                               isFavorite: item.isFavorite,
                               onStateChanged: (value) =>
-                                  repo.checkChange(value, item.nameTask),
-                              updatestate: (value) => repo.updateFavorites(
-                                item.nameTask,
-                                value ?? false,
-                              ),
+                                  repo.checkChange(value, item.id),
+                              updatestate: (value) =>
+                                  repo.updateFavorites(item.id, value ?? false),
                             ),
                           );
                         },
@@ -130,8 +125,10 @@ class ToDoTaskScreen extends State<TodoTaskState> {
             builder: (_) => AddElement(
               addName: 'task',
               create: (context) {
+                final uuid = Uuid();
                 repo.addItemTask(
                   ToDoTask(
+                    id: uuid.v4(),
                     nameTask: context,
                     completed: false,
                     nameCategory: widget.categoryName,

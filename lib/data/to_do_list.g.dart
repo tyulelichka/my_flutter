@@ -17,24 +17,27 @@ class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ToDoTask(
-      nameTask: fields[0] as String,
-      completed: fields[1] as bool,
-      nameCategory: fields[2] as String,
-      isFavorite: fields[3] as bool,
+      id: fields[0] as String,
+      nameTask: fields[1] as String,
+      completed: fields[2] as bool,
+      nameCategory: fields[3] as String,
+      isFavorite: fields[4] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToDoTask obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.nameTask)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.completed)
+      ..write(obj.nameTask)
       ..writeByte(2)
-      ..write(obj.nameCategory)
+      ..write(obj.completed)
       ..writeByte(3)
+      ..write(obj.nameCategory)
+      ..writeByte(4)
       ..write(obj.isFavorite);
   }
 
