@@ -25,7 +25,7 @@ class ToDoCategoryScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: repo,
-          child: ToDoTaskScreen(categoryName: category.name),
+          child: TodoTaskState(categoryName: category.name),
         ),
       ),
     );
@@ -83,9 +83,16 @@ class ToDoCategoryScreen extends StatelessWidget {
                 children: [
                   SlidableAction(
                     onPressed: (_) {
-                      context.read<ToDoCategoriesRepository>().deleteCategory(
-                        category,
-                      );
+                      final success = context
+                          .read<ToDoCategoriesRepository>()
+                          .deleteCategory(category);
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Musn't delete default category"),
+                          ),
+                        );
+                      }
                     },
                     icon: Icons.delete_outline,
                     backgroundColor: const Color.fromARGB(255, 252, 102, 91),

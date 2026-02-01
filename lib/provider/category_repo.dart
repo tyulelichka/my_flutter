@@ -20,6 +20,18 @@ class ToDoCategoriesRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  void createDefaultCategory() {
+    final exists = categoryBox.values.any(
+      (category) => category.name == AppConstantsString.defaultCategoryName,
+    );
+
+    if (!exists) {
+      categoryBox.add(
+        ToDoCategory(name: AppConstantsString.defaultCategoryName, iconName: 'all'),
+      );
+    }
+  }
+
   void renameCategory(ToDoCategory category, String newName, String newIcon) {
     final oldName = category.name;
     category.name = newName;
@@ -35,9 +47,22 @@ class ToDoCategoriesRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteCategory(ToDoCategory category) {
-    category.delete();
-    notifyListeners();
+  bool deleteCategory(ToDoCategory category) {
+    final oldName = category.name;
+    for (final task in taskBox.values) {
+      if (task.nameCategory == oldName) {
+        task.nameCategory = AppConstantsString.defaultCategoryName;
+        task.save();
+      }
+    }
+    if (oldName != AppConstantsString.defaultCategoryName) {
+      if (category.isInBox) {
+        category.delete();
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   int countForCategory(String categoryName) {

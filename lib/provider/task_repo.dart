@@ -27,24 +27,27 @@ class ToDoTaskRepository extends ChangeNotifier {
     });
   }
 
-  void updateFavorites(int index, bool value) {
-    final task = _filteredTask[index];
+  void updateFavorites(String id, bool value) {
+    final task = _filteredTask.firstWhere((value) => value.id == id);
     task.isFavorite = value;
     task.save();
+
     sortTask();
     notifyListeners();
   }
 
-  void checkChange(bool? value, int index) {
-    final task = _filteredTask[index];
+  void checkChange(bool? value, String id) {
+    final task = _filteredTask.firstWhere((value) => value.id == id);
     task.completed = value ?? false;
     task.save();
     notifyListeners();
   }
 
-  void deleteTask(int index) {
-    _filteredTask[index].delete();
-    _filteredTask.removeAt(index);
+  void deleteTask(String id) {
+    final task = _filteredTask.indexWhere((value) => value.id == id);
+    _filteredTask[task].delete();
+    _filteredTask.removeAt(task);
+
     notifyListeners();
   }
 
