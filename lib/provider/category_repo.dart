@@ -12,11 +12,18 @@ class ToDoCategoriesRepository extends ChangeNotifier {
     taskBox.listenable().addListener(() {
       notifyListeners();
     });
+    categoryBox.listenable().addListener(() {
+      notifyListeners();
+    });
   }
   List<ToDoCategory> get categories => categoryBox.values.toList();
 
-  void addCategory({required String name, required String icon}) {
-    categoryBox.add(ToDoCategory(name: name, iconName: icon));
+  void addCategory({
+    required String id,
+    required String name,
+    required String icon,
+  }) {
+    categoryBox.add(ToDoCategory(id: id, name: name, iconName: icon));
     notifyListeners();
   }
 
@@ -27,48 +34,42 @@ class ToDoCategoriesRepository extends ChangeNotifier {
 
     if (!exists) {
       categoryBox.add(
-        ToDoCategory(name: AppConstantsString.defaultCategoryName, iconName: 'all'),
+        ToDoCategory(
+          id: 'default',
+          name: AppConstantsString.defaultCategoryName,
+          iconName: 'all',
+        ),
       );
     }
   }
 
   void renameCategory(ToDoCategory category, String newName, String newIcon) {
-    final oldName = category.name;
     category.name = newName;
     category.iconName = newIcon;
     category.save();
-
-    for (final task in taskBox.values) {
-      if (task.nameCategory == oldName) {
-        task.nameCategory = newName;
-        task.save();
-      }
-    }
     notifyListeners();
   }
 
   bool deleteCategory(ToDoCategory category) {
-    final oldName = category.name;
+    if (category.id == 'default') return false;
+
     for (final task in taskBox.values) {
-      if (task.nameCategory == oldName) {
-        task.nameCategory = AppConstantsString.defaultCategoryName;
+      if (task.idCategory == category.id) {
+        task.idCategory = 'default';
         task.save();
       }
     }
-    if (oldName != AppConstantsString.defaultCategoryName) {
-      if (category.isInBox) {
-        category.delete();
-      }
-      return true;
-    } else {
-      return false;
-    }
+
+    category.delete();
+    notifyListeners();
+    return true;
   }
 
-  int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
-    return listTasksBox.values
-        .where((task) => task.nameCategory == categoryName)
+  int countForCategory(String categoryId) {
+    return taskBox.values
+        .where(
+          (task) => task.idCategory == categoryId && task.completed == false,
+        )
         .length;
   }
 }

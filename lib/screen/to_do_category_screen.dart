@@ -9,6 +9,7 @@ import 'package:todolist/screen/to_do_task_screen.dart';
 import 'package:todolist/widgets/add_category.dart';
 import 'package:todolist/widgets/category.dart';
 import 'package:todolist/widgets/update_category.dart';
+import 'package:uuid/uuid.dart';
 
 class ToDoCategoryScreen extends StatelessWidget {
   const ToDoCategoryScreen({super.key});
@@ -16,7 +17,7 @@ class ToDoCategoryScreen extends StatelessWidget {
   void openCategory(BuildContext context, ToDoCategory category) {
     final repo = context.read<ToDoTaskRepository>();
     try {
-      repo.loadTasks(category.name);
+      repo.loadTasks(category.id);
     } catch (error, stackTrace) {
       debugPrint(stackTrace.toString());
     }
@@ -25,7 +26,10 @@ class ToDoCategoryScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: repo,
-          child: TodoTaskState(categoryName: category.name),
+          child: TodoTaskState(
+            categoryName: category.name,
+            idCategory: category.id,
+          ),
         ),
       ),
     );
@@ -107,7 +111,7 @@ class ToDoCategoryScreen extends StatelessWidget {
                     return CategoryWidgets(
                       category: category,
                       nameIcon: category.iconName,
-                      countTask: repo.countForCategory(category.name),
+                      countTask: repo.countForCategory(category.id),
                     );
                   },
                 ),
@@ -124,7 +128,9 @@ class ToDoCategoryScreen extends StatelessWidget {
             context: context,
             builder: (_) => AddCategoryElement(
               onAdd: (text, icon) {
+                final uuid = Uuid();
                 context.read<ToDoCategoriesRepository>().addCategory(
+                  id: uuid.v4(),
                   name: text,
                   icon: icon,
                 );
