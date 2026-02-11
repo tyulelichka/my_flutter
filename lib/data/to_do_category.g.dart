@@ -17,22 +17,25 @@ class ToDoCategoryAdapter extends TypeAdapter<ToDoCategory> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ToDoCategory(
-      id: fields[0] as String,
+      categoryId: fields[0] as String,
       name: fields[1] as String,
       iconName: fields[2] as String,
+      isDefault: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToDoCategory obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.categoryId)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.iconName);
+      ..write(obj.iconName)
+      ..writeByte(3)
+      ..write(obj.isDefault);
   }
 
   @override

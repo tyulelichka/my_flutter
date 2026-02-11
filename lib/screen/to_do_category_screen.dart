@@ -17,7 +17,7 @@ class ToDoCategoryScreen extends StatelessWidget {
   void openCategory(BuildContext context, ToDoCategory category) {
     final repo = context.read<ToDoTaskRepository>();
     try {
-      repo.loadTasks(category.id);
+      repo.loadTasks(category.categoryId);
     } catch (error, stackTrace) {
       debugPrint(stackTrace.toString());
     }
@@ -28,7 +28,7 @@ class ToDoCategoryScreen extends StatelessWidget {
           value: repo,
           child: TodoTaskState(
             categoryName: category.name,
-            idCategory: category.id,
+            idCategory: category.categoryId,
           ),
         ),
       ),
@@ -111,7 +111,7 @@ class ToDoCategoryScreen extends StatelessWidget {
                     return CategoryWidgets(
                       category: category,
                       nameIcon: category.iconName,
-                      countTask: repo.countForCategory(category.id),
+                      countTask: repo.countTasks(category.categoryId),
                     );
                   },
                 ),
@@ -128,9 +128,7 @@ class ToDoCategoryScreen extends StatelessWidget {
             context: context,
             builder: (_) => AddCategoryElement(
               onAdd: (text, icon) {
-                final uuid = Uuid();
                 context.read<ToDoCategoriesRepository>().addCategory(
-                  id: uuid.v4(),
                   name: text,
                   icon: icon,
                 );

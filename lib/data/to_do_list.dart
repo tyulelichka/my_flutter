@@ -5,7 +5,7 @@ part 'to_do_list.g.dart';
 @HiveType(typeId: 1)
 class ToDoTask extends HiveObject {
   @HiveField(0)
-  String id;
+  String taskId;
 
   @HiveField(1)
   String nameTask;
@@ -20,7 +20,7 @@ class ToDoTask extends HiveObject {
   bool isFavorite;
 
   ToDoTask({
-    required this.id,
+    required this.taskId,
     required this.nameTask,
     required this.completed,
     required this.idCategory,

@@ -71,7 +71,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) => repo.deleteTask(item.id),
+                                  onPressed: (_) => repo.deleteTask(item.taskId),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
@@ -85,9 +85,9 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                                 categoryName: item.idCategory,
                                 isFavorite: item.isFavorite,
                                 onStateChanged: (value) =>
-                                    repo.checkChange(value, item.id),
+                                    repo.checkChange(value, item.taskId),
                                 updatestate: (value) => repo.updateFavorites(
-                                  item.id,
+                                  item.taskId,
                                   value ?? false,
                                 ),
                               ),
@@ -117,7 +117,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) => repo.deleteTask(item.id),
+                                  onPressed: (_) => repo.deleteTask(item.taskId),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
@@ -131,9 +131,9 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                                 categoryName: item.idCategory,
                                 isFavorite: item.isFavorite,
                                 onStateChanged: (value) =>
-                                    repo.checkChange(value, item.id),
+                                    repo.checkChange(value, item.taskId),
                                 updatestate: (value) => repo.updateFavorites(
-                                  item.id,
+                                  item.taskId,
                                   value ?? false,
                                 ),
                               ),
@@ -157,7 +157,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                 final uuid = Uuid();
                 repo.addItemTask(
                   ToDoTask(
-                    id: uuid.v4(),
+                    taskId: uuid.v4(),
                     nameTask: context,
                     completed: false,
 

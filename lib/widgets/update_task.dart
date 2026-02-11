@@ -43,7 +43,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                     isExpanded: true,
                     items: repo.categories.map((category) {
                       return DropdownMenuItem<String>(
-                        value: category.id,
+                        value: category.categoryId,
                         child: Row(
                           children: [
                             Icon(
@@ -75,7 +75,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                           ? null
                           : () {
                               repo.moveTaskToCategory(
-                                taskId: widget.task.id,
+                                taskId: widget.task.taskId,
                                 newIdCategory: selectedCategoryId,
                               );
                               Navigator.pop(context);
@@ -133,7 +133,10 @@ class _UpdateTaskState extends State<UpdateTask> {
                         value: widget.task.completed,
                         onChanged: (value) {
                           setState(() {
-                            repo.checkChange(value ?? false, widget.task.id);
+                            repo.checkChange(
+                              value ?? false,
+                              widget.task.taskId,
+                            );
                           });
                         },
                       ),
@@ -152,7 +155,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                     onPressed: () {
                       setState(() {
                         repo.updateFavorites(
-                          widget.task.id,
+                          widget.task.taskId,
                           !widget.task.isFavorite,
                         );
                       });

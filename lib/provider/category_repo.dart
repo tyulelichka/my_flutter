@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
+import 'package:uuid/uuid.dart';
 
 class ToDoCategoriesRepository extends ChangeNotifier {
   final Box<ToDoCategory> categoryBox;
@@ -18,16 +19,16 @@ class ToDoCategoriesRepository extends ChangeNotifier {
   }
   List<ToDoCategory> get categories => categoryBox.values.toList();
 
-  void addCategory({
-    required String id,
-    required String name,
-    required String icon,
-  }) {
-    categoryBox.add(ToDoCategory(id: id, name: name, iconName: icon));
+  void addCategory({required String name, required String icon}) {
+    final uuid = Uuid();
+    categoryBox.add(
+      ToDoCategory(categoryId: uuid.v4(), name: name, iconName: icon),
+    );
     notifyListeners();
   }
 
   void createDefaultCategory() {
+    final uuid = const Uuid();
     final exists = categoryBox.values.any(
       (category) => category.name == AppConstantsString.defaultCategoryName,
     );
@@ -35,9 +36,10 @@ class ToDoCategoriesRepository extends ChangeNotifier {
     if (!exists) {
       categoryBox.add(
         ToDoCategory(
-          id: 'default',
+          categoryId: uuid.v4(),
           name: AppConstantsString.defaultCategoryName,
           iconName: 'all',
+          isDefault: true,
         ),
       );
     }
@@ -51,11 +53,15 @@ class ToDoCategoriesRepository extends ChangeNotifier {
   }
 
   bool deleteCategory(ToDoCategory category) {
-    if (category.id == 'default') return false;
+    if (category.isDefault) return false;
+
+    final defaultCategory = categoryBox.values.firstWhere(
+      (value) => value.isDefault,
+    );
 
     for (final task in taskBox.values) {
-      if (task.idCategory == category.id) {
-        task.idCategory = 'default';
+      if (task.idCategory == category.categoryId) {
+        task.idCategory = defaultCategory.categoryId;
         task.save();
       }
     }
@@ -65,7 +71,7 @@ class ToDoCategoriesRepository extends ChangeNotifier {
     return true;
   }
 
-  int countForCategory(String categoryId) {
+  int countTasks(String categoryId) {
     return taskBox.values
         .where(
           (task) => task.idCategory == categoryId && task.completed == false,

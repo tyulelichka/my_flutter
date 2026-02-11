@@ -32,23 +32,23 @@ class ToDoTaskRepository extends ChangeNotifier {
     });
   }
 
-  void updateFavorites(String id, bool value) {
-    final task = _filteredTask.firstWhere((value) => value.id == id);
+  void updateFavorites(String taskId, bool value) {
+    final task = _filteredTask.firstWhere((value) => value.taskId == taskId);
     task.isFavorite = value;
     task.save();
     sortTask();
     notifyListeners();
   }
 
-  void checkChange(bool? value, String id) {
-    final task = _filteredTask.firstWhere((value) => value.id == id);
+  void checkChange(bool? value, String taskId) {
+    final task = _filteredTask.firstWhere((value) => value.taskId == taskId);
     task.completed = value ?? false;
     task.save();
     notifyListeners();
   }
 
-  void deleteTask(String id) {
-    final task = _filteredTask.indexWhere((value) => value.id == id);
+  void deleteTask(String taskId) {
+    final task = _filteredTask.indexWhere((value) => value.taskId == taskId);
     _filteredTask[task].delete();
     _filteredTask.removeAt(task);
 
@@ -66,11 +66,13 @@ class ToDoTaskRepository extends ChangeNotifier {
     required String taskId,
     required String newIdCategory,
   }) {
-    final task = listTasksBox.values.firstWhere((value) => value.id == taskId);
+    final task = listTasksBox.values.firstWhere(
+      (value) => value.taskId == taskId,
+    );
     task.idCategory = newIdCategory;
     task.save();
 
-    _filteredTask.removeWhere((value) => value.id == taskId);
+    _filteredTask.removeWhere((value) => value.taskId == taskId);
 
     notifyListeners();
   }
