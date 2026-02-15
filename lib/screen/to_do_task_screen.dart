@@ -71,7 +71,8 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) => repo.deleteTask(item.taskId),
+                                  onPressed: (_) =>
+                                      repo.deleteTask(item.taskId),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
@@ -117,7 +118,8 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) => repo.deleteTask(item.taskId),
+                                  onPressed: (_) =>
+                                      repo.deleteTask(item.taskId),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
