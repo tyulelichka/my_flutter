@@ -14,11 +14,11 @@ class ToDoTaskRepository extends ChangeNotifier {
   List<ToDoCategory> get categories => categoryBox.values.toList();
   List<ToDoTask> get tasks => List.unmodifiable(_filteredTask);
 
-  void loadTasks(String categoryIdName) {
+  void loadTasks({required String categoryId}) {
     _filteredTask
       ..clear()
       ..addAll(
-        listTasksBox.values.where((task) => task.idCategory == categoryIdName),
+        listTasksBox.values.where((task) => task.idCategory == categoryId),
       );
     sortTask();
     notifyListeners();
@@ -40,7 +40,7 @@ class ToDoTaskRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void checkChange(bool? value, String taskId) {
+  void checkChange(String taskId, bool? value) {
     final task = _filteredTask.firstWhere((value) => value.taskId == taskId);
     task.completed = value ?? false;
     task.save();

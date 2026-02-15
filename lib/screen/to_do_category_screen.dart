@@ -16,7 +16,7 @@ class ToDoCategoryScreen extends StatelessWidget {
   void openCategory(BuildContext context, ToDoCategory category) {
     final repo = context.read<ToDoTaskRepository>();
     try {
-      repo.loadTasks(category.categoryId);
+      repo.loadTasks(categoryId: category.categoryId);
     } catch (error, stackTrace) {
       debugPrint(stackTrace.toString());
     }

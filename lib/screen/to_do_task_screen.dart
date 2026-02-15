@@ -86,7 +86,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                                 categoryName: item.idCategory,
                                 isFavorite: item.isFavorite,
                                 onStateChanged: (value) =>
-                                    repo.checkChange(value, item.taskId),
+                                    repo.checkChange(item.taskId, value),
                                 updatestate: (value) => repo.updateFavorites(
                                   item.taskId,
                                   value ?? false,
@@ -133,7 +133,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                                 categoryName: item.idCategory,
                                 isFavorite: item.isFavorite,
                                 onStateChanged: (value) =>
-                                    repo.checkChange(value, item.taskId),
+                                    repo.checkChange(item.taskId, value),
                                 updatestate: (value) => repo.updateFavorites(
                                   item.taskId,
                                   value ?? false,

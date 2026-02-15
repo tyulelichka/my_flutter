@@ -26,7 +26,7 @@ class _UpdateTaskState extends State<UpdateTask> {
       ),
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder: (context, setState) {
             return Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -58,7 +58,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                     }).toList(),
                     onChanged: (value) {
                       if (value != null) {
-                        setModalState(() {
+                        setState(() {
                           selectedCategoryId = value;
                         });
                       }
@@ -134,8 +134,8 @@ class _UpdateTaskState extends State<UpdateTask> {
                         onChanged: (value) {
                           setState(() {
                             repo.checkChange(
-                              value ?? false,
                               widget.task.taskId,
+                              value ?? false,
                             );
                           });
                         },
