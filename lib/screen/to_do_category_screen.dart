@@ -16,7 +16,7 @@ class ToDoCategoryScreen extends StatelessWidget {
   void openCategory(BuildContext context, ToDoCategory category) {
     final repo = context.read<ToDoTaskRepository>();
     try {
-      repo.loadTasks(category.name);
+      repo.loadTasks(categoryId: category.categoryId);
     } catch (error, stackTrace) {
       debugPrint(stackTrace.toString());
     }
@@ -25,7 +25,10 @@ class ToDoCategoryScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: repo,
-          child: TodoTaskState(categoryName: category.name),
+          child: TodoTaskState(
+            categoryName: category.name,
+            idCategory: category.categoryId,
+          ),
         ),
       ),
     );
@@ -107,7 +110,7 @@ class ToDoCategoryScreen extends StatelessWidget {
                     return CategoryWidgets(
                       category: category,
                       nameIcon: category.iconName,
-                      countTask: repo.countForCategory(category.name),
+                      countTask: repo.countTasks(category.categoryId),
                     );
                   },
                 ),

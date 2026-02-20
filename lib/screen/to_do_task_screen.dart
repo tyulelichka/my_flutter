@@ -5,17 +5,36 @@ import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/task_repo.dart';
 import 'package:todolist/widgets/add_task.dart';
 import 'package:todolist/widgets/task.dart';
+import 'package:todolist/widgets/update_task.dart';
 import 'package:uuid/uuid.dart';
 
 class TodoTaskState extends StatefulWidget {
   final String categoryName;
-  const TodoTaskState({super.key, required this.categoryName});
+  final String idCategory;
+  const TodoTaskState({
+    super.key,
+    required this.categoryName,
+    required this.idCategory,
+  });
 
   @override
   State<TodoTaskState> createState() => ToDoTaskScreen();
 }
 
 class ToDoTaskScreen extends State<TodoTaskState> {
+  void openTask(BuildContext context, ToDoTask task) {
+    final repo = context.read<ToDoTaskRepository>();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: repo,
+          child: UpdateTask(categoryName: widget.categoryName, task: task),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
@@ -52,21 +71,27 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) => repo.deleteTask(item.id),
+                                  onPressed: (_) =>
+                                      repo.deleteTask(item.taskId),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
                               ],
                             ),
-                            child: TaskCard(
-                              nameTask: item.nameTask,
-                              taskCompleted: item.completed,
-                              categoryName: item.nameCategory,
-                              isFavorite: item.isFavorite,
-                              onStateChanged: (value) =>
-                                  repo.checkChange(value, item.id),
-                              updatestate: (value) =>
-                                  repo.updateFavorites(item.id, value ?? false),
+                            child: GestureDetector(
+                              onTap: () => openTask(context, item),
+                              child: TaskCard(
+                                nameTask: item.nameTask,
+                                taskCompleted: item.completed,
+                                categoryName: item.idCategory,
+                                isFavorite: item.isFavorite,
+                                onStateChanged: (value) =>
+                                    repo.checkChange(item.taskId, value),
+                                updatestate: (value) => repo.updateFavorites(
+                                  item.taskId,
+                                  value ?? false,
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -93,21 +118,27 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                               motion: const StretchMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (_) => repo.deleteTask(item.id),
+                                  onPressed: (_) =>
+                                      repo.deleteTask(item.taskId),
                                   icon: Icons.delete_outline,
                                   backgroundColor: Colors.red,
                                 ),
                               ],
                             ),
-                            child: TaskCard(
-                              nameTask: item.nameTask,
-                              taskCompleted: item.completed,
-                              categoryName: item.nameCategory,
-                              isFavorite: item.isFavorite,
-                              onStateChanged: (value) =>
-                                  repo.checkChange(value, item.id),
-                              updatestate: (value) =>
-                                  repo.updateFavorites(item.id, value ?? false),
+                            child: GestureDetector(
+                              onTap: () => openTask(context, item),
+                              child: TaskCard(
+                                nameTask: item.nameTask,
+                                taskCompleted: item.completed,
+                                categoryName: item.idCategory,
+                                isFavorite: item.isFavorite,
+                                onStateChanged: (value) =>
+                                    repo.checkChange(item.taskId, value),
+                                updatestate: (value) => repo.updateFavorites(
+                                  item.taskId,
+                                  value ?? false,
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -128,10 +159,11 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                 final uuid = Uuid();
                 repo.addItemTask(
                   ToDoTask(
-                    id: uuid.v4(),
+                    taskId: uuid.v4(),
                     nameTask: context,
                     completed: false,
-                    nameCategory: widget.categoryName,
+
+                    idCategory: widget.idCategory,
                     isFavorite: false,
                   ),
                 );

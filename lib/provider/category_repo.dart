@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
+import 'package:uuid/uuid.dart';
 
 class ToDoCategoriesRepository extends ChangeNotifier {
   final Box<ToDoCategory> categoryBox;
@@ -12,63 +13,69 @@ class ToDoCategoriesRepository extends ChangeNotifier {
     taskBox.listenable().addListener(() {
       notifyListeners();
     });
+    categoryBox.listenable().addListener(() {
+      notifyListeners();
+    });
   }
   List<ToDoCategory> get categories => categoryBox.values.toList();
 
   void addCategory({required String name, required String icon}) {
-    categoryBox.add(ToDoCategory(name: name, iconName: icon));
+    final uuid = Uuid();
+    categoryBox.add(
+      ToDoCategory(categoryId: uuid.v4(), name: name, iconName: icon),
+    );
     notifyListeners();
   }
 
   void createDefaultCategory() {
+    final uuid = const Uuid();
     final exists = categoryBox.values.any(
       (category) => category.name == AppConstantsString.defaultCategoryName,
     );
 
     if (!exists) {
       categoryBox.add(
-        ToDoCategory(name: AppConstantsString.defaultCategoryName, iconName: 'all'),
+        ToDoCategory(
+          categoryId: uuid.v4(),
+          name: AppConstantsString.defaultCategoryName,
+          iconName: 'all',
+          isDefault: true,
+        ),
       );
     }
   }
 
   void renameCategory(ToDoCategory category, String newName, String newIcon) {
-    final oldName = category.name;
     category.name = newName;
     category.iconName = newIcon;
     category.save();
-
-    for (final task in taskBox.values) {
-      if (task.nameCategory == oldName) {
-        task.nameCategory = newName;
-        task.save();
-      }
-    }
     notifyListeners();
   }
 
   bool deleteCategory(ToDoCategory category) {
-    final oldName = category.name;
+    if (category.isDefault) return false;
+
+    final defaultCategory = categoryBox.values.firstWhere(
+      (value) => value.isDefault,
+    );
+
     for (final task in taskBox.values) {
-      if (task.nameCategory == oldName) {
-        task.nameCategory = AppConstantsString.defaultCategoryName;
+      if (task.idCategory == category.categoryId) {
+        task.idCategory = defaultCategory.categoryId;
         task.save();
       }
     }
-    if (oldName != AppConstantsString.defaultCategoryName) {
-      if (category.isInBox) {
-        category.delete();
-      }
-      return true;
-    } else {
-      return false;
-    }
+
+    category.delete();
+    notifyListeners();
+    return true;
   }
 
-  int countForCategory(String categoryName) {
-    final listTasksBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
-    return listTasksBox.values
-        .where((task) => task.nameCategory == categoryName)
+  int countTasks(String categoryId) {
+    return taskBox.values
+        .where(
+          (task) => task.idCategory == categoryId && task.completed == false,
+        )
         .length;
   }
 }
