@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todolist/data/app_constants.dart';
+import 'package:todolist/data/repeat_type.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
 
@@ -40,10 +41,56 @@ class ToDoTaskRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void checkChange(String taskId, bool? value) {
-    final task = _filteredTask.firstWhere((value) => value.taskId == taskId);
+  void checkChange(String taskId, bool? value, BuildContext context) {
+    final taskBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
+    final task = taskBox.values.firstWhere((value) => value.taskId == taskId);
+
     task.completed = value ?? false;
     task.save();
+
+    if ((value ?? false) && task.repeat != RepeatType.none) {
+      DateTime newDate;
+
+      switch (task.repeat) {
+        case RepeatType.daily:
+          newDate = task.date.add(const Duration(days: 1));
+          break;
+        case RepeatType.weekly:
+          newDate = task.date.add(const Duration(days: 7));
+          break;
+        case RepeatType.monthly:
+          newDate = DateTime(
+            task.date.year,
+            task.date.month + 1,
+            task.date.day,
+          );
+          break;
+        case RepeatType.none:
+          newDate = task.date;
+          break;
+      }
+      final newTask = ToDoTask(
+        taskId: UniqueKey().toString(),
+        nameTask: task.nameTask,
+        date: newDate,
+        repeat: task.repeat,
+        completed: false,
+        idCategory: task.idCategory,
+        isFavorite: false,
+      );
+
+      taskBox.add(newTask);
+      if (value == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Task "${task.nameTask}" completed'),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green[400],
+          ),
+        );
+      }
+    }
     notifyListeners();
   }
 
@@ -75,5 +122,14 @@ class ToDoTaskRepository extends ChangeNotifier {
     _filteredTask.removeWhere((value) => value.taskId == taskId);
 
     notifyListeners();
+  }
+
+  void updateRepeatType({
+    required String taskId,
+    required RepeatType repeatType,
+  }) {
+    final task = tasks.firstWhere((value) => value.taskId == taskId);
+    task.repeat = repeatType;
+    task.save();
   }
 }

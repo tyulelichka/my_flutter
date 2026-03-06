@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todolist/data/repeat_type.dart';
 import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/icons_repo.dart';
 import 'package:todolist/provider/task_repo.dart';
@@ -96,6 +97,77 @@ class _UpdateTaskState extends State<UpdateTask> {
     );
   }
 
+  void _openRepeatSheet(BuildContext context) {
+    final repo = context.read<ToDoTaskRepository>();
+    RepeatType selectedRepeat = widget.task.repeat;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Select repeatability",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 15),
+                  DropdownButton<RepeatType>(
+                    value: selectedRepeat,
+                    isExpanded: true,
+                    items: RepeatType.values.map((repeat) {
+                      return DropdownMenuItem<RepeatType>(
+                        value: repeat,
+                        child: Text(repeat.name),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedRepeat = value;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple[200],
+                      ),
+                      onPressed: selectedRepeat == widget.task.repeat
+                          ? null
+                          : () {
+                              repo.updateRepeatType(
+                                taskId: widget.task.taskId,
+                                repeatType: selectedRepeat,
+                              );
+                              Navigator.pop(context);
+                            },
+                      child: const Text(
+                        "Save",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.read<ToDoTaskRepository>();
@@ -136,6 +208,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                             repo.checkChange(
                               widget.task.taskId,
                               value ?? false,
+                              context,
                             );
                           });
                         },
@@ -192,6 +265,39 @@ class _UpdateTaskState extends State<UpdateTask> {
                     icon: Icon(Icons.compare_arrows_outlined),
                     label: Text(
                       'Change category',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ButtonStyle(
+                      iconColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 0, 0, 0),
+                      ),
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 225, 190, 231),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.purple[100],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 15.0,
+              ),
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () => _openRepeatSheet(context),
+                    icon: Icon(Icons.repeat),
+                    label: Text(
+                      'Repeat',
                       style: TextStyle(color: Colors.black),
                     ),
                     style: ButtonStyle(
