@@ -75,6 +75,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
               repo.checkChange(item.taskId, value, context),
           updatestate: (value) =>
               repo.updateFavorites(item.taskId, value ?? false),
+          deadline: repo.getDate(taskId: item.taskId),
         ),
       ),
     );

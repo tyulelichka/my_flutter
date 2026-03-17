@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/repeat_type.dart';
 import 'package:todolist/data/to_do_category.dart';
 import 'package:todolist/data/to_do_list.dart';
+import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
+import 'package:collection/collection.dart';
 
 class ToDoTaskRepository extends ChangeNotifier {
   final Box<ToDoTask> listTasksBox;
@@ -38,19 +42,25 @@ class ToDoTaskRepository extends ChangeNotifier {
     task.isFavorite = value;
     task.save();
     sortTask();
-    notifyListeners();
   }
 
   void checkChange(String taskId, bool? value, BuildContext context) {
     final taskBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
-    final task = taskBox.values.firstWhere((value) => value.taskId == taskId);
+    final task = taskBox.values.firstWhereOrNull(
+      (value) => value.taskId == taskId,
+    );
+    if (task == null) return;
 
-    task.completed = value ?? false;
-    task.save();
+    if (value == true) {
+      task.completed = true;
+      task.save();
+    } else {
+      task.completed = false;
+      task.save();
+    }
 
     if ((value ?? false) && task.repeat != RepeatType.none) {
       DateTime newDate;
-
       switch (task.repeat) {
         case RepeatType.daily:
           newDate = task.date.add(const Duration(days: 1));
@@ -65,48 +75,36 @@ class ToDoTaskRepository extends ChangeNotifier {
             task.date.day,
           );
           break;
-        case RepeatType.none:
+        default:
           newDate = task.date;
-          break;
       }
+
       final newTask = ToDoTask(
-        taskId: UniqueKey().toString(),
+        taskId: const Uuid().v4(),
         nameTask: task.nameTask,
         date: newDate,
         repeat: task.repeat,
         completed: false,
         idCategory: task.idCategory,
-        isFavorite: false,
+        isFavorite: task.isFavorite,
       );
-
       taskBox.add(newTask);
-      if (value == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Task "${task.nameTask}" completed'),
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.green[400],
-          ),
-        );
-      }
     }
-    notifyListeners();
+
+    final repo = context.read<ToDoTaskRepository>();
+    repo.loadTasks(categoryId: task.idCategory);
   }
 
   void deleteTask(String taskId) {
     final task = _filteredTask.indexWhere((value) => value.taskId == taskId);
     _filteredTask[task].delete();
     _filteredTask.removeAt(task);
-
-    notifyListeners();
   }
 
   void addItemTask(ToDoTask task) {
     _filteredTask.add(task);
     listTasksBox.add(task);
     sortTask();
-    notifyListeners();
   }
 
   void moveTaskToCategory({
@@ -120,8 +118,6 @@ class ToDoTaskRepository extends ChangeNotifier {
     task.save();
 
     _filteredTask.removeWhere((value) => value.taskId == taskId);
-
-    notifyListeners();
   }
 
   void updateRepeatType({
@@ -131,5 +127,22 @@ class ToDoTaskRepository extends ChangeNotifier {
     final task = tasks.firstWhere((value) => value.taskId == taskId);
     task.repeat = repeatType;
     task.save();
+  }
+
+  getDate({required String taskId}) {
+    final task = tasks.firstWhere((value) => value.taskId == taskId);
+    return DateFormat('dd.MM.yyyy').format(task.date);
+  }
+
+  void updateDeadline({required String taskId, required DateTime deadline}) {
+    final task = tasks.firstWhere((value) => value.taskId == taskId);
+    task.date = deadline;
+    task.save();
+  }
+
+  bool isSameDate(DateTime nowDate, DateTime newDate) {
+    return nowDate.year == newDate.year &&
+        nowDate.month == newDate.month &&
+        nowDate.day == newDate.day;
   }
 }
