@@ -4,6 +4,8 @@ import 'package:todolist/data/repeat_type.dart';
 import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/icons_repo.dart';
 import 'package:todolist/provider/task_repo.dart';
+import 'package:todolist/widgets/botton_sheet.dart';
+import 'package:todolist/widgets/update_deadline.dart';
 
 class UpdateTask extends StatefulWidget {
   final String categoryName;
@@ -99,68 +101,17 @@ class _UpdateTaskState extends State<UpdateTask> {
   void _openRepeatSheet(BuildContext context) {
     final repo = context.read<ToDoTaskRepository>();
     RepeatType selectedRepeat = widget.task.repeat;
-
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Select repeatability",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 15),
-                  DropdownButton<RepeatType>(
-                    value: selectedRepeat,
-                    isExpanded: true,
-                    items: RepeatType.values.map((repeat) {
-                      return DropdownMenuItem<RepeatType>(
-                        value: repeat,
-                        child: Text(repeat.name),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          selectedRepeat = value;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple[200],
-                      ),
-                      onPressed: selectedRepeat == widget.task.repeat
-                          ? null
-                          : () {
-                              repo.updateRepeatType(
-                                taskId: widget.task.taskId,
-                                repeatType: selectedRepeat,
-                              );
-                              Navigator.pop(context);
-                            },
-                      child: const Text(
-                        "Save",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
+        return RepeatSheet(
+          selectedRepeat: selectedRepeat,
+          task: widget.task,
+          onUpdate: (taskId, repeatType) {
+            repo.updateRepeatType(taskId: taskId, repeatType: repeatType);
           },
         );
       },
@@ -169,9 +120,7 @@ class _UpdateTaskState extends State<UpdateTask> {
 
   void _openDeadline(BuildContext context) {
     final repo = context.read<ToDoTaskRepository>();
-
     final selectedDate = ValueNotifier<DateTime>(widget.task.date);
-
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -180,69 +129,15 @@ class _UpdateTaskState extends State<UpdateTask> {
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16),
-          child: ValueListenableBuilder<DateTime>(
-            valueListenable: selectedDate,
-            builder: (context, value, _) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Select deadline",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 15),
-                  GestureDetector(
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: value,
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-
-                      if (pickedDate != null) {
-                        selectedDate.value = pickedDate;
-                      }
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text("${value.day}.${value.month}.${value.year}"),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple[200],
-                      ),
-                      onPressed: repo.isSameDate(value, widget.task.date)
-                          ? null
-                          : () {
-                              setState(() {
-                                repo.updateDeadline(
-                                  taskId: widget.task.taskId,
-                                  deadline: value,
-                                );
-                              });
-                              Navigator.pop(context);
-                            },
-                      child: const Text(
-                        "Save",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
+          child: UpdateDeadline(
+            selectedDate: selectedDate,
+            initialDate: widget.task.date,
+            onSave: (date) {
+              setState(
+                () => repo.updateDeadline(
+                  taskId: widget.task.taskId,
+                  deadline: date,
+                ),
               );
             },
           ),
@@ -378,9 +273,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                 children: [
                   TextButton.icon(
                     onPressed: () {
-                      setState(() {
-                        _openRepeatSheet(context);
-                      });
+                      _openRepeatSheet(context);
                     },
                     icon: Icon(Icons.repeat),
                     label: Text(
@@ -416,9 +309,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                 children: [
                   TextButton.icon(
                     onPressed: () {
-                      setState(() {
-                        _openDeadline(context);
-                      });
+                      _openDeadline(context);
                     },
                     icon: Icon(Icons.date_range),
                     label: Text(

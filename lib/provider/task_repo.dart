@@ -23,7 +23,9 @@ class ToDoTaskRepository extends ChangeNotifier {
     _filteredTask
       ..clear()
       ..addAll(
-        listTasksBox.values.where((task) => task.idCategory == categoryId),
+        listTasksBox.values
+            .where((task) => task.idCategory == categoryId)
+            .toList(),
       );
     sortTask();
     notifyListeners();
@@ -35,12 +37,14 @@ class ToDoTaskRepository extends ChangeNotifier {
       final intB = b.isFavorite ? 1 : 0;
       return intB - intA;
     });
+    notifyListeners();
   }
 
   void updateFavorites(String taskId, bool value) {
     final task = _filteredTask.firstWhere((value) => value.taskId == taskId);
     task.isFavorite = value;
     task.save();
+
     sortTask();
   }
 
@@ -96,15 +100,20 @@ class ToDoTaskRepository extends ChangeNotifier {
   }
 
   void deleteTask(String taskId) {
-    final task = _filteredTask.indexWhere((value) => value.taskId == taskId);
-    _filteredTask[task].delete();
-    _filteredTask.removeAt(task);
+    final index = _filteredTask.indexWhere((value) => value.taskId == taskId);
+
+    if (index != -1) {
+      final task = _filteredTask[index];
+      task.delete();
+      _filteredTask.removeAt(index);
+      notifyListeners();
+    }
   }
 
   void addItemTask(ToDoTask task) {
-    _filteredTask.add(task);
     listTasksBox.add(task);
-    sortTask();
+    loadTasks(categoryId: task.idCategory);
+    notifyListeners();
   }
 
   void moveTaskToCategory({
@@ -118,6 +127,7 @@ class ToDoTaskRepository extends ChangeNotifier {
     task.save();
 
     _filteredTask.removeWhere((value) => value.taskId == taskId);
+    notifyListeners();
   }
 
   void updateRepeatType({
@@ -129,7 +139,7 @@ class ToDoTaskRepository extends ChangeNotifier {
     task.save();
   }
 
-  getDate({required String taskId}) {
+  String getDate({required String taskId}) {
     final task = tasks.firstWhere((value) => value.taskId == taskId);
     return DateFormat('dd.MM.yyyy').format(task.date);
   }
@@ -139,10 +149,10 @@ class ToDoTaskRepository extends ChangeNotifier {
     task.date = deadline;
     task.save();
   }
+}
 
-  bool isSameDate(DateTime nowDate, DateTime newDate) {
-    return nowDate.year == newDate.year &&
-        nowDate.month == newDate.month &&
-        nowDate.day == newDate.day;
+extension DateTimeExtension on DateTime {
+  bool isSameDate(DateTime other) {
+    return year == other.year && month == other.month && day == other.day;
   }
 }

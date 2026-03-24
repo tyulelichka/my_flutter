@@ -85,7 +85,14 @@ class ToDoTaskScreen extends State<TodoTaskState> {
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
     final taskBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
-
+    final tasks = taskBox.values
+        .where(
+          (task) => !task.completed && task.idCategory == widget.idCategory,
+        )
+        .toList();
+    final tasksCompleted = taskBox.values
+        .where((task) => task.completed && task.idCategory == widget.idCategory)
+        .toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName),
@@ -95,20 +102,6 @@ class ToDoTaskScreen extends State<TodoTaskState> {
       body: ValueListenableBuilder(
         valueListenable: taskBox.listenable(),
         builder: (context, Box<ToDoTask> box, _) {
-          final tasks = box.values
-              .where(
-                (task) =>
-                    !task.completed && task.idCategory == widget.idCategory,
-              )
-              .toList();
-
-          final tasksCompleted = box.values
-              .where(
-                (task) =>
-                    task.completed && task.idCategory == widget.idCategory,
-              )
-              .toList();
-
           return ListView(
             children: <Widget>[
               ExpansionTile(
