@@ -3,11 +3,12 @@ import 'package:todolist/data/repeat_type.dart';
 import 'package:todolist/data/to_do_list.dart';
 
 class RepeatSheet extends StatefulWidget {
-  RepeatType selectedRepeat;
+  final RepeatType selectedRepeat;
   final void Function(String taskId, RepeatType repeatType) onUpdate;
   final ToDoTask task;
 
-  RepeatSheet({
+  const RepeatSheet({
+    super.key,
     required this.selectedRepeat,
     required this.onUpdate,
     required this.task,
@@ -55,7 +56,7 @@ class RepeatSheetState extends State<RepeatSheet> {
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
-                      widget.selectedRepeat = value;
+                      widget.selectedRepeat == value;
                     });
                   }
                 },

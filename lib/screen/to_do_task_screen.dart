@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:todolist/data/app_constants.dart';
 import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/task_repo.dart';
 import 'package:todolist/widgets/add_task.dart';
@@ -84,69 +82,57 @@ class ToDoTaskScreen extends State<TodoTaskState> {
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
-    final taskBox = Hive.box<ToDoTask>(AppConstantsString.toDoTaskBoxName);
-    final tasks = taskBox.values
-        .where(
-          (task) => !task.completed && task.idCategory == widget.idCategory,
-        )
-        .toList();
-    final tasksCompleted = taskBox.values
-        .where((task) => task.completed && task.idCategory == widget.idCategory)
-        .toList();
+    final tasks = repo.tasks.where((task) => !task.completed).toList();
+    final tasksCompleted = repo.tasks.where((task) => task.completed).toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName),
         backgroundColor: Colors.purple[200],
       ),
       backgroundColor: Colors.purple[50],
-      body: ValueListenableBuilder(
-        valueListenable: taskBox.listenable(),
-        builder: (context, Box<ToDoTask> box, _) {
-          return ListView(
-            children: <Widget>[
-              ExpansionTile(
-                title: const Text('To do'),
-                initiallyExpanded: true,
-                children: [
-                  tasks.isEmpty
-                      ? const ListTile(title: Text('No tasks'))
-                      : SizedBox(
-                          height: 350,
-                          child: ListView.separated(
-                            itemCount: tasks.length,
-                            itemBuilder: (context, index) {
-                              final item = tasks[index];
-                              return buildTaskCard(context, item, repo);
-                            },
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 10),
-                          ),
-                        ),
-                ],
-              ),
-              ExpansionTile(
-                title: const Text('Completed'),
-                initiallyExpanded: false,
-                children: [
-                  tasksCompleted.isEmpty
-                      ? const ListTile(title: Text('No tasks'))
-                      : SizedBox(
-                          height: 200,
-                          child: ListView.separated(
-                            itemCount: tasksCompleted.length,
-                            itemBuilder: (context, index) {
-                              final item = tasksCompleted[index];
-                              return buildTaskCard(context, item, repo);
-                            },
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 10),
-                          ),
-                        ),
-                ],
-              ),
+      body: ListView(
+        children: <Widget>[
+          ExpansionTile(
+            title: const Text('To do'),
+            initiallyExpanded: true,
+            children: [
+              tasks.isEmpty
+                  ? const ListTile(title: Text('No tasks'))
+                  : SizedBox(
+                      height: 350,
+                      child: ListView.separated(
+                        itemCount: tasks.length,
+                        itemBuilder: (context, index) {
+                          final item = tasks[index];
+                          return buildTaskCard(context, item, repo);
+                        },
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 10),
+                      ),
+                    ),
             ],
-          );
-        },
+          ),
+          ExpansionTile(
+            title: const Text('Completed'),
+            initiallyExpanded: false,
+            children: [
+              tasksCompleted.isEmpty
+                  ? const ListTile(title: Text('No tasks'))
+                  : SizedBox(
+                      height: 200,
+                      child: ListView.separated(
+                        itemCount: tasksCompleted.length,
+                        itemBuilder: (context, index) {
+                          final item = tasksCompleted[index];
+                          return buildTaskCard(context, item, repo);
+                        },
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 10),
+                      ),
+                    ),
+            ],
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

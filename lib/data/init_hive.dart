@@ -18,7 +18,7 @@ Future<void> initHive() async {
   final taskBox = await Hive.openBox<ToDoTask>(
     AppConstantsString.toDoTaskBoxName,
   );
-  
+
   final categoriesRepo = ToDoCategoriesRepository(categoryBox, taskBox);
   categoriesRepo.createDefaultCategory();
 }
