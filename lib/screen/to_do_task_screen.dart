@@ -35,16 +35,55 @@ class ToDoTaskScreen extends State<TodoTaskState> {
     );
   }
 
+  Widget buildTaskCard(
+    BuildContext context,
+    ToDoTask item,
+    ToDoTaskRepository repo,
+  ) {
+    return Slidable(
+      key: ValueKey(item.key),
+      endActionPane: ActionPane(
+        motion: const StretchMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (_) {
+              repo.deleteTask(item.taskId);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Task "${item.nameTask}" deleted'),
+                  duration: const Duration(seconds: 2),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.red[300],
+                ),
+              );
+            },
+            icon: Icons.delete_outline,
+            backgroundColor: Colors.red,
+          ),
+        ],
+      ),
+      child: GestureDetector(
+        onTap: () => openTask(context, item),
+        child: TaskCard(
+          nameTask: item.nameTask,
+          taskCompleted: item.completed,
+          categoryName: item.idCategory,
+          isFavorite: item.isFavorite,
+          onStateChanged: (value) =>
+              repo.checkChange(item.taskId, value, context),
+          updatestate: (value) =>
+              repo.updateFavorites(item.taskId, value ?? false),
+          deadline: repo.getDate(taskId: item.taskId),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ToDoTaskRepository>();
-    final List<ToDoTask> tasksCompleted = [];
-    bool isExpandedToDo = true;
-    bool isExpandedCompleted = false;
-    final List<ToDoTask> tasks = [];
-    tasks.addAll(repo.tasks.where((task) => task.completed == false));
-    tasksCompleted.addAll(repo.tasks.where((task) => task.completed == true));
-
+    final tasks = repo.tasks.where((task) => !task.completed).toList();
+    final tasksCompleted = repo.tasks.where((task) => task.completed).toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName),
@@ -55,94 +94,40 @@ class ToDoTaskScreen extends State<TodoTaskState> {
         children: <Widget>[
           ExpansionTile(
             title: const Text('To do'),
-            initiallyExpanded: isExpandedToDo,
+            initiallyExpanded: true,
             children: [
               tasks.isEmpty
-                  ? ListTile(title: Text('No tasks'))
+                  ? const ListTile(title: Text('No tasks'))
                   : SizedBox(
                       height: 350,
                       child: ListView.separated(
                         itemCount: tasks.length,
                         itemBuilder: (context, index) {
                           final item = tasks[index];
-                          return Slidable(
-                            key: ValueKey(item.key),
-                            endActionPane: ActionPane(
-                              motion: const StretchMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (_) =>
-                                      repo.deleteTask(item.taskId),
-                                  icon: Icons.delete_outline,
-                                  backgroundColor: Colors.red,
-                                ),
-                              ],
-                            ),
-                            child: GestureDetector(
-                              onTap: () => openTask(context, item),
-                              child: TaskCard(
-                                nameTask: item.nameTask,
-                                taskCompleted: item.completed,
-                                categoryName: item.idCategory,
-                                isFavorite: item.isFavorite,
-                                onStateChanged: (value) =>
-                                    repo.checkChange(item.taskId, value),
-                                updatestate: (value) => repo.updateFavorites(
-                                  item.taskId,
-                                  value ?? false,
-                                ),
-                              ),
-                            ),
-                          );
+                          return buildTaskCard(context, item, repo);
                         },
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 10),
                       ),
                     ),
             ],
           ),
           ExpansionTile(
-            title: Text('Completed'),
-            initiallyExpanded: isExpandedCompleted,
+            title: const Text('Completed'),
+            initiallyExpanded: false,
             children: [
               tasksCompleted.isEmpty
-                  ? ListTile(title: Text('No tasks'))
+                  ? const ListTile(title: Text('No tasks'))
                   : SizedBox(
                       height: 200,
                       child: ListView.separated(
                         itemCount: tasksCompleted.length,
                         itemBuilder: (context, index) {
                           final item = tasksCompleted[index];
-                          return Slidable(
-                            key: ValueKey(item.key),
-                            endActionPane: ActionPane(
-                              motion: const StretchMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (_) =>
-                                      repo.deleteTask(item.taskId),
-                                  icon: Icons.delete_outline,
-                                  backgroundColor: Colors.red,
-                                ),
-                              ],
-                            ),
-                            child: GestureDetector(
-                              onTap: () => openTask(context, item),
-                              child: TaskCard(
-                                nameTask: item.nameTask,
-                                taskCompleted: item.completed,
-                                categoryName: item.idCategory,
-                                isFavorite: item.isFavorite,
-                                onStateChanged: (value) =>
-                                    repo.checkChange(item.taskId, value),
-                                updatestate: (value) => repo.updateFavorites(
-                                  item.taskId,
-                                  value ?? false,
-                                ),
-                              ),
-                            ),
-                          );
+                          return buildTaskCard(context, item, repo);
                         },
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 10),
                       ),
                     ),
             ],
@@ -162,7 +147,7 @@ class ToDoTaskScreen extends State<TodoTaskState> {
                     taskId: uuid.v4(),
                     nameTask: context,
                     completed: false,
-
+                    date: DateTime.now(),
                     idCategory: widget.idCategory,
                     isFavorite: false,
                   ),

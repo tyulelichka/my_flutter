@@ -7,6 +7,7 @@ class TaskCard extends StatelessWidget {
   final Function(bool?) onStateChanged;
   final Function(bool?) updatestate;
   final bool isFavorite;
+  final String deadline;
 
   const TaskCard({
     super.key,
@@ -16,6 +17,7 @@ class TaskCard extends StatelessWidget {
     required this.onStateChanged,
     required this.isFavorite,
     required this.updatestate,
+    required this.deadline,
   });
 
   @override
@@ -39,6 +41,15 @@ class TaskCard extends StatelessWidget {
                 ),
                 Text(
                   nameTask,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    decoration: taskCompleted
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                  ),
+                ),
+                Text(
+                  " to ${deadline}",
                   style: TextStyle(
                     fontSize: 18.0,
                     decoration: taskCompleted

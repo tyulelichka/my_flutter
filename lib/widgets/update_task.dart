@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todolist/data/repeat_type.dart';
 import 'package:todolist/data/to_do_list.dart';
 import 'package:todolist/provider/icons_repo.dart';
 import 'package:todolist/provider/task_repo.dart';
+import 'package:todolist/widgets/botton_sheet.dart';
+import 'package:todolist/widgets/update_deadline.dart';
 
 class UpdateTask extends StatefulWidget {
   final String categoryName;
@@ -79,7 +82,6 @@ class _UpdateTaskState extends State<UpdateTask> {
                                 newIdCategory: selectedCategoryId,
                               );
                               Navigator.pop(context);
-                              Navigator.pop(context);
                             },
                       child: const Text(
                         "Move",
@@ -91,6 +93,54 @@ class _UpdateTaskState extends State<UpdateTask> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _openRepeatSheet(BuildContext context) {
+    final repo = context.read<ToDoTaskRepository>();
+    RepeatType selectedRepeat = widget.task.repeat;
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return RepeatSheet(
+          selectedRepeat: selectedRepeat,
+          task: widget.task,
+          onUpdate: (taskId, repeatType) {
+            repo.updateRepeatType(taskId: taskId, repeatType: repeatType);
+          },
+        );
+      },
+    );
+  }
+
+  void _openDeadline(BuildContext context) {
+    final repo = context.read<ToDoTaskRepository>();
+    final selectedDate = ValueNotifier<DateTime>(widget.task.date);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: UpdateDeadline(
+            selectedDate: selectedDate,
+            initialDate: widget.task.date,
+            onSave: (date) {
+              setState(
+                () => repo.updateDeadline(
+                  taskId: widget.task.taskId,
+                  deadline: date,
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -136,6 +186,7 @@ class _UpdateTaskState extends State<UpdateTask> {
                             repo.checkChange(
                               widget.task.taskId,
                               value ?? false,
+                              context,
                             );
                           });
                         },
@@ -192,6 +243,77 @@ class _UpdateTaskState extends State<UpdateTask> {
                     icon: Icon(Icons.compare_arrows_outlined),
                     label: Text(
                       'Change category',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ButtonStyle(
+                      iconColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 0, 0, 0),
+                      ),
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 225, 190, 231),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.purple[100],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 15.0,
+              ),
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      _openRepeatSheet(context);
+                    },
+                    icon: Icon(Icons.repeat),
+                    label: Text(
+                      'Repeat',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ButtonStyle(
+                      iconColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 0, 0, 0),
+                      ),
+                      backgroundColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 225, 190, 231),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(height: 10),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.purple[100],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 15.0,
+              ),
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      _openDeadline(context);
+                    },
+                    icon: Icon(Icons.date_range),
+                    label: Text(
+                      'Deadline: ${repo.getDate(taskId: widget.task.taskId)}',
                       style: TextStyle(color: Colors.black),
                     ),
                     style: ButtonStyle(

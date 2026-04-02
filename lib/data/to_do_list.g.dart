@@ -22,13 +22,15 @@ class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
       completed: fields[2] as bool,
       idCategory: fields[3] as String,
       isFavorite: fields[4] as bool,
+      repeat: fields[5] as RepeatType,
+      date: fields[6] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToDoTask obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.taskId)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class ToDoTaskAdapter extends TypeAdapter<ToDoTask> {
       ..writeByte(3)
       ..write(obj.idCategory)
       ..writeByte(4)
-      ..write(obj.isFavorite);
+      ..write(obj.isFavorite)
+      ..writeByte(5)
+      ..write(obj.repeat)
+      ..writeByte(6)
+      ..write(obj.date);
   }
 
   @override
